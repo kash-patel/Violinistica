@@ -87,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
         fourthFinger.setOnTouchListener(touchListener);
 
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
         soundPool = new SoundPool(1, AudioManager.USE_DEFAULT_STREAM_TYPE, AudioManager.ADJUST_SAME);
         soundPool.setOnLoadCompleteListener(new OnLoadCompleteListener() {
