@@ -1,4 +1,4 @@
-package com.kashithekash.testapp;
+package com.kashithekash.violinistica;
 
 import androidx.appcompat.app.AppCompatActivity;
 

@@ -1,4 +1,4 @@
-package com.kashithekash.testapp;
+package com.kashithekash.violinistica;
 
 import android.content.Context;
 
@@ -22,6 +22,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        assertEquals("com.kashithekash.testapp", appContext.getPackageName());
+        assertEquals("com.kashithekash.violinistica", appContext.getPackageName());
     }
 }
