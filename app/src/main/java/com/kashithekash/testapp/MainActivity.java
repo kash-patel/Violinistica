@@ -24,14 +24,8 @@ import static android.view.View.*;
 public class MainActivity extends AppCompatActivity {
 
     // GUI stuff; this will all get prettified eventually
-    Button playOpenString;
-    Button firstFinger;
-    Button secondFinger;
-    Button thirdFinger;
-    Button fourthFinger;
-
-    TextView currentStringText;
-    TextView currentNoteText;
+    Button playOpenString, firstFinger, secondFinger, thirdFinger, fourthFinger;
+    TextView currentStringText, currentNoteText;
 
     // Sensor stuff
     SensorManager sensorManager;
@@ -69,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         rvSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
 
-        playOpenString = (Button) findViewById(R.id.playOpenString);
+        playOpenString = (Button) findViewById(R.id.playOpenStringButton);
         firstFinger = (Button) findViewById(R.id.firstFinger);
         secondFinger = (Button) findViewById(R.id.secondFinger);
         thirdFinger = (Button) findViewById(R.id.thirdFinger);

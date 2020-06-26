@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,69 +8,194 @@
     android:orientation="horizontal"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/playOpenString"
-        android:layout_weight="0.5"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:text="Play Open String"/>
-
-    <LinearLayout
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/noteButtonContainer"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="0.5"
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/firstFinger"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="100dp"
-            android:paddingVertical="30dp"
-            android:text="First Finger" />
+            android:id="@+id/modeToggleButton"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginLeft="10px"
+            android:layout_marginTop="10px"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
         <Button
-            android:id="@+id/secondFinger"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="100dp"
-            android:paddingVertical="30dp"
-            android:text="Second Finger" />
+            android:id="@+id/playOpenStringButton"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:text="Play Open String"
+            app:layout_constraintWidth_percent="0.5"
+            app:layout_constraintHeight_percent="0.8"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
         <Button
-            android:id="@+id/thirdFinger"
-            android:layout_width="match_parent"
+            android:id="@+id/noteButton1"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:paddingVertical="30dp"
-            android:text="third Finger" />
+            android:text="1"
+            app:layout_constraintLeft_toRightOf="@id/playOpenStringButton"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/noteButton2"
+            />
+
         <Button
-            android:id="@+id/fourthFinger"
-            android:layout_width="match_parent"
+            android:id="@+id/noteButton2"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="100dp"
-            android:paddingVertical="30dp"
-            android:text="Fourth Finger" />
-        <TextView
-            android:layout_width="match_parent"
+            android:text="2"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/playOpenStringButton"
+            app:layout_constraintTop_toBottomOf="@id/noteButton1"
+            app:layout_constraintBottom_toTopOf="@id/noteButton3"/>
+
+        <Button
+            android:id="@+id/noteButton3"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="Current String"/>
-        <TextView
-            android:id="@+id/currentViolinString"
-            android:layout_width="match_parent"
+            android:text="3"
+            app:layout_constraintLeft_toRightOf="@id/playOpenStringButton"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton2"
+            app:layout_constraintBottom_toTopOf="@id/noteButton4"/>
+
+        <Button
+            android:id="@+id/noteButton4"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textSize="20dp"
-            android:text="None"/>
-        <TextView
-            android:layout_width="match_parent"
+            android:text="4"
+            app:layout_constraintLeft_toRightOf="@id/playOpenStringButton"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton3"
+            app:layout_constraintBottom_toTopOf="@id/noteButton5"/>
+
+        <Button
+            android:id="@+id/noteButton5"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="Current Note"/>
-        <TextView
-            android:id="@+id/currentNote"
-            android:layout_width="match_parent"
+            android:text="5"
+            app:layout_constraintLeft_toRightOf="@id/playOpenStringButton"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton4"
+            app:layout_constraintBottom_toTopOf="@id/noteButton6"/>
+
+        <Button
+            android:id="@+id/noteButton6"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textSize="20dp"
-            android:text="None"/>
-    </LinearLayout>
+            android:text="6"
+            app:layout_constraintLeft_toRightOf="@id/playOpenStringButton"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton5"
+            app:layout_constraintBottom_toTopOf="@id/noteButton7"/>
+
+        <Button
+            android:id="@+id/noteButton7"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="7"
+            app:layout_constraintLeft_toRightOf="@id/playOpenStringButton"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton6"
+            app:layout_constraintBottom_toTopOf="@id/noteButton8"/>
+
+        <Button
+            android:id="@+id/noteButton8"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="8"
+            app:layout_constraintLeft_toRightOf="@id/playOpenStringButton"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton7"
+            app:layout_constraintBottom_toTopOf="@id/noteButton9"/>
+
+        <Button
+            android:id="@+id/noteButton9"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="9"
+            app:layout_constraintLeft_toRightOf="@id/playOpenStringButton"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton8"
+            app:layout_constraintBottom_toTopOf="@id/noteButton10" />
+
+        <Button
+            android:id="@+id/noteButton10"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="10"
+            app:layout_constraintLeft_toRightOf="@id/playOpenStringButton"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton9"
+            app:layout_constraintBottom_toTopOf="@id/noteButton11" />
+
+        <Button
+            android:id="@+id/noteButton11"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="11"
+            app:layout_constraintLeft_toRightOf="@id/playOpenStringButton"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton10"
+            app:layout_constraintBottom_toTopOf="@id/noteButton12"/>
+
+        <Button
+            android:id="@+id/noteButton12"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="12"
+            app:layout_constraintLeft_toRightOf="@id/playOpenStringButton"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton11"
+            app:layout_constraintBottom_toTopOf="@id/noteButton13" />
+
+        <Button
+            android:id="@+id/noteButton13"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="13"
+            app:layout_constraintLeft_toRightOf="@id/playOpenStringButton"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton12"
+            app:layout_constraintBottom_toTopOf="@id/noteButton14" />
+
+        <Button
+            android:id="@+id/noteButton14"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="14"
+            app:layout_constraintLeft_toRightOf="@id/playOpenStringButton"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton13"
+            app:layout_constraintBottom_toTopOf="@id/noteButton15" />
+
+        <Button
+            android:id="@+id/noteButton15"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="15"
+            app:layout_constraintLeft_toRightOf="@id/playOpenStringButton"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton14"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="#fddd"
+            android:text="Tilt Indicator"
+            app:layout_constraintWidth_percent="0.5"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/playOpenStringButton"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </LinearLayout>
