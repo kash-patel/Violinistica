@@ -1,4 +1,4 @@
-# TestApp
+# Violinistica
 
 Tilting changes the violin "string" (e.g. G, D, A, E) and sound is produced by touching the buttons.
 
