@@ -5,21 +5,16 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.media.AudioManager;
-import android.media.SoundPool;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.HashMap;
-
 public class PlayMode extends AppCompatActivity {
 
-    PlayNotes playNotes;
+    PlayModeHelper playModeHelper;
 
     // GUI stuff; this will all get prettified eventually
     Button playOpenStringButton, noteButton1, noteButton2, noteButton3,
@@ -47,9 +42,9 @@ public class PlayMode extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.play_mode_layout);
 
-        playNotes = new PlayNotes();
+        playModeHelper = new PlayModeHelper();
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         rvSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
@@ -81,28 +76,28 @@ public class PlayMode extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        sensorManager.registerListener(sensorListener, rvSensor, sensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(sensorEventListener, rvSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        sensorManager.registerListener(sensorListener, rvSensor, sensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(sensorEventListener, rvSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        sensorManager.unregisterListener(sensorListener);
+        sensorManager.unregisterListener(sensorEventListener);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        sensorManager.unregisterListener(sensorListener);
+        sensorManager.unregisterListener(sensorEventListener);
     }
 
-    SensorEventListener sensorListener = new SensorEventListener() {
+    SensorEventListener sensorEventListener = new SensorEventListener() {
 
         boolean initialRollSet = false;
 
@@ -167,9 +162,9 @@ public class PlayMode extends AppCompatActivity {
         public boolean onTouch(View v, MotionEvent event) {
 
             // Sets a flag so we can change sound when string changes
-            if (event.getAction() == event.ACTION_UP) {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
                 isHeld = false;
-                playNotes.stopNote(streamID);
+                playModeHelper.stopNote(streamID);
                 currentNoteID = 0;
                 notePlaying = 0;
                 currentNote = "None";
@@ -177,9 +172,9 @@ public class PlayMode extends AppCompatActivity {
             }
 
             if (currentNoteID != getNote(currentViolinString, v)) {
-                if (streamID != -1) playNotes.stopNote(streamID);
+                if (streamID != -1) playModeHelper.stopNote(streamID);
                 currentNoteID = getNote(currentViolinString, v);
-                streamID = playNotes.playNote(currentNoteID);
+                streamID = playModeHelper.playNote(currentNoteID);
             }
 
             return false;
@@ -289,6 +284,4 @@ public class PlayMode extends AppCompatActivity {
         else
             currentViolinString = ViolinString.E;
     }
-
-    enum ViolinString { G, D, A, E }
 }

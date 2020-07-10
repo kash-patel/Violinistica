@@ -1,19 +1,17 @@
 package com.kashithekash.violinistica;
 
-import android.content.Context;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.HashMap;
 
 import static androidx.core.content.ContextCompat.getSystemService;
 
-public class PlayNotes extends AppCompatActivity {
+public class PlayModeHelper {
 
     // Map of notes. SoundPool must access notes via noteMap, because this is where they have been
     // loaded

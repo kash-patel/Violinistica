@@ -1,4 +1,7 @@
 package com.kashithekash.violinistica;
 
-public class CustomiseMode {
+import android.app.Activity;
+
+public class CustomiseMode extends Activity {
+
 }
