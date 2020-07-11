@@ -1,30 +1,31 @@
 package com.kashithekash.violinistica;
 
+import android.app.Activity;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-public class PlayMode extends AppCompatActivity {
+public class PlayMode extends Activity {
 
     PlayModeHelper playModeHelper;
-
-    // GUI stuff; this will all get prettified eventually
-    Button playOpenStringButton, noteButton1, noteButton2, noteButton3,
-            noteButton4, noteButton5, noteButton6, noteButton7,
-            noteButton8, noteButton9, noteButton10, noteButton11,
-            noteButton12, noteButton13, noteButton14, noteButton15;
 
     // Sensor stuff
     SensorManager sensorManager;
     Sensor rvSensor;        // Rotation Vector sensor; uses accelerometer and magnetic field sensors
+
+    // SoundPool instance
+    SoundPool soundPool;
+    boolean isLoaded = false;   // Whether the SoundPool instance has loaded
+    // AudioManager instance
+    AudioManager audioManager;
 
     // A is the default for lots of things
     ViolinString currentViolinString = ViolinString.A;
@@ -39,44 +40,47 @@ public class PlayMode extends AppCompatActivity {
     boolean stringChanged = false;
     boolean highestFingerChanged = false;
 
+    // GUI stuff; this will all get prettified eventually
+    Button playOpenStringButton, noteButton1, noteButton2, noteButton3,
+            noteButton4, noteButton5, noteButton6, noteButton7,
+            noteButton8, noteButton9, noteButton10, noteButton11,
+            noteButton12, noteButton13, noteButton14, noteButton15;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.play_mode_layout);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        sensorManager.registerListener(sensorEventListener, rvSensor, SensorManager.SENSOR_DELAY_NORMAL);
 
         playModeHelper = new PlayModeHelper();
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         rvSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
 
-        playOpenStringButton = (Button) findViewById(R.id.playOpenStringButton);
-        noteButton1 = (Button) findViewById(R.id.noteButton1);
-        noteButton2 = (Button) findViewById(R.id.noteButton2);
-        noteButton3 = (Button) findViewById(R.id.noteButton3);
-        noteButton4 = (Button) findViewById(R.id.noteButton4);
-        noteButton5 = (Button) findViewById(R.id.noteButton5);
-        noteButton6 = (Button) findViewById(R.id.noteButton6);
-        noteButton7 = (Button) findViewById(R.id.noteButton7);
-        noteButton8 = (Button) findViewById(R.id.noteButton8);
-        noteButton9 = (Button) findViewById(R.id.noteButton9);
-        noteButton10 = (Button) findViewById(R.id.noteButton10);
-        noteButton11 = (Button) findViewById(R.id.noteButton11);
-        noteButton12 = (Button) findViewById(R.id.noteButton12);
-        noteButton13 = (Button) findViewById(R.id.noteButton13);
-        noteButton14 = (Button) findViewById(R.id.noteButton14);
-        noteButton15 = (Button) findViewById(R.id.noteButton15);
-
         playOpenStringButton.setOnTouchListener(touchListener);
         noteButton2.setOnTouchListener(touchListener);
         noteButton4.setOnTouchListener(touchListener);
         noteButton5.setOnTouchListener(touchListener);
         noteButton7.setOnTouchListener(touchListener);
-    }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        sensorManager.registerListener(sensorEventListener, rvSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
+
+        soundPool = new SoundPool(1, AudioManager.USE_DEFAULT_STREAM_TYPE, AudioManager.ADJUST_SAME);
+        soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+            @Override
+            public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
+                isLoaded = true;
+            }
+        });
+
+        playModeHelper.loadNotes(soundPool, this);
     }
 
     @Override
@@ -95,6 +99,8 @@ public class PlayMode extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         sensorManager.unregisterListener(sensorEventListener);
+        soundPool.release();
+        soundPool = null;
     }
 
     SensorEventListener sensorEventListener = new SensorEventListener() {
@@ -164,7 +170,7 @@ public class PlayMode extends AppCompatActivity {
             // Sets a flag so we can change sound when string changes
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 isHeld = false;
-                playModeHelper.stopNote(streamID);
+                stopNote(streamID);
                 currentNoteID = 0;
                 notePlaying = 0;
                 currentNote = "None";
@@ -172,9 +178,9 @@ public class PlayMode extends AppCompatActivity {
             }
 
             if (currentNoteID != getNote(currentViolinString, v)) {
-                if (streamID != -1) playModeHelper.stopNote(streamID);
+                if (streamID != -1) stopNote(streamID);
                 currentNoteID = getNote(currentViolinString, v);
-                streamID = playModeHelper.playNote(currentNoteID);
+                streamID = playNote(currentNoteID);
             }
 
             return false;
@@ -273,6 +279,14 @@ public class PlayMode extends AppCompatActivity {
         return note;
     }
 
+    int playNote(int note) {
+        return soundPool.play(playModeHelper.getNote(note), 1, 1, 0, -1, 1);
+    }
+
+    void stopNote(int streamID) {
+        soundPool.stop(streamID);
+    }
+
     private void updateCurrentString(float deltaRoll) {
 
         if (deltaRoll <= -30)
@@ -283,5 +297,25 @@ public class PlayMode extends AppCompatActivity {
             currentViolinString = ViolinString.A;
         else
             currentViolinString = ViolinString.E;
+    }
+
+    public void loadGUIElements () {
+
+        playOpenStringButton = findViewById(R.id.playOpenStringButton);
+        noteButton1 = findViewById(R.id.noteButton1);
+        noteButton2 = findViewById(R.id.noteButton2);
+        noteButton3 = findViewById(R.id.noteButton3);
+        noteButton4 = findViewById(R.id.noteButton4);
+        noteButton5 = findViewById(R.id.noteButton5);
+        noteButton6 = findViewById(R.id.noteButton6);
+        noteButton7 = findViewById(R.id.noteButton7);
+        noteButton8 = findViewById(R.id.noteButton8);
+        noteButton9 = findViewById(R.id.noteButton9);
+        noteButton10 = findViewById(R.id.noteButton10);
+        noteButton11 = findViewById(R.id.noteButton11);
+        noteButton12 = findViewById(R.id.noteButton12);
+        noteButton13 = findViewById(R.id.noteButton13);
+        noteButton14 = findViewById(R.id.noteButton14);
+        noteButton15 = findViewById(R.id.noteButton15);
     }
 }
