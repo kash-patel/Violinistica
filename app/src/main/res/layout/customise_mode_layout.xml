@@ -8,6 +8,4 @@
     android:orientation="horizontal"
     tools:context=".CustomiseMode">
 
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>

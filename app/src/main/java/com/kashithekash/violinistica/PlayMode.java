@@ -27,6 +27,7 @@ public class PlayMode extends Activity {
     // SoundPool instance
     SoundPool soundPool;
     boolean isLoaded = false;   // Whether the SoundPool instance has loaded
+
     // AudioManager instance
     AudioManager audioManager;
 
