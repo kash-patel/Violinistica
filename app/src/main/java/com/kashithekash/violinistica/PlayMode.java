@@ -11,7 +11,10 @@ import android.media.SoundPool;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.widget.Button;
+
+import java.util.HashMap;
 
 public class PlayMode extends Activity {
 
@@ -29,6 +32,9 @@ public class PlayMode extends Activity {
 
     // A is the default for lots of things
     ViolinString currentViolinString = ViolinString.A;
+
+    // A HashMap to load the notes for SoundPool
+    HashMap<Integer, Integer> noteMap;
 
     // Current note
     String currentNote;     // Format dsharp5, e6, etc.
@@ -80,7 +86,8 @@ public class PlayMode extends Activity {
             }
         });
 
-        playModeHelper.loadNotes(soundPool, this);
+        loadGUIElements();
+        loadNotes();
     }
 
     @Override
@@ -119,7 +126,7 @@ public class PlayMode extends Activity {
             if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
 
                 updateRoll(event);
-                updateCurrentString(deltaRoll);
+                playModeHelper.getCurrentViolinString(deltaRoll);
 
                 if (!stringChanged && currentViolinString != prevString) {
                     stringChanged = true;
@@ -160,7 +167,7 @@ public class PlayMode extends Activity {
         }
     };
 
-    View.OnTouchListener touchListener = new View.OnTouchListener() {
+    OnTouchListener touchListener = new OnTouchListener() {
 
         boolean isHeld = true;
 
@@ -177,9 +184,9 @@ public class PlayMode extends Activity {
                 return false;
             }
 
-            if (currentNoteID != getNote(currentViolinString, v)) {
+            if (currentNoteID != playModeHelper.getNote(currentViolinString, v, noteMap)) {
                 if (streamID != -1) stopNote(streamID);
-                currentNoteID = getNote(currentViolinString, v);
+                currentNoteID = playModeHelper.getNote(currentViolinString, v, noteMap);
                 streamID = playNote(currentNoteID);
             }
 
@@ -187,116 +194,23 @@ public class PlayMode extends Activity {
         }
     };
 
-    private int getNote(ViolinString currentViolinString, View v) {
+    GUIListeners.ButtonListener buttonListener = new GUIListeners.ButtonListener() {
 
-        int note = 0;
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
 
-        switch (currentViolinString) {
-            case G:
-                switch (v.getId()) {
-                    case R.id.playOpenStringButton:
-                        note = R.raw.g3;
-                        break;
-                    case R.id.noteButton2:
-                        note = R.raw.a3;
-                        break;
-                    case R.id.noteButton4:
-                        note = R.raw.b3;
-                        break;
-                    case R.id.noteButton5:
-                        note = R.raw.c4;
-                        break;
-                    case R.id.noteButton7:
-                        note = R.raw.d4;
-                        break;
-                    default:
-                        break;
-                } break;
-            case D:
-                switch (v.getId()) {
-                    case R.id.playOpenStringButton:
-                        note = R.raw.d4;
-                        break;
-                    case R.id.noteButton2:
-                        note = R.raw.e4;
-                        break;
-                    case R.id.noteButton4:
-                        note = R.raw.fsharp4;
-                        break;
-                    case R.id.noteButton5:
-                        note = R.raw.g4;
-                        break;
-                    case R.id.noteButton7:
-                        note = R.raw.a4;
-                        break;
-                    default:
-                        break;
-                } break;
-            case A:
-                switch (v.getId()) {
-                    case R.id.playOpenStringButton:
-                        note = R.raw.a4;
-                        break;
-                    case R.id.noteButton2:
-                        note = R.raw.b4;
-                        break;
-                    case R.id.noteButton4:
-                        note = R.raw.csharp5;
-                        break;
-                    case R.id.noteButton5:
-                        note = R.raw.d5;
-                        break;
-                    case R.id.noteButton7:
-                        note = R.raw.e5;
-                        break;
-                    default:
-                        break;
-                } break;
-            case E:
-                switch (v.getId()) {
-                    case R.id.playOpenStringButton:
-                        note = R.raw.e5;
-                        break;
-                    case R.id.noteButton2:
-                        note = R.raw.fsharp5;
-                        break;
-                    case R.id.noteButton4:
-                        note = R.raw.gsharp5;
-                        break;
-                    case R.id.noteButton5:
-                        note = R.raw.a5;
-                        break;
-                    case R.id.noteButton7:
-                        note = R.raw.b5;
-                        break;
-                    default:
-                        break;
-                } break;
-            default:
-                break;
+            
+
+            return super.onTouch(v, event);
         }
-
-        return note;
-    }
+    };
 
     int playNote(int note) {
-        return soundPool.play(playModeHelper.getNote(note), 1, 1, 0, -1, 1);
+        return soundPool.play(note, 1, 1, 0, -1, 1);
     }
 
     void stopNote(int streamID) {
         soundPool.stop(streamID);
-    }
-
-    private void updateCurrentString(float deltaRoll) {
-
-        if (deltaRoll <= -30)
-            currentViolinString = ViolinString.G;
-        else if (deltaRoll > -30 && deltaRoll <= -10)
-            currentViolinString = ViolinString.D;
-        else if (deltaRoll > -10 && deltaRoll <= 10)
-            currentViolinString = ViolinString.A;
-        else
-            currentViolinString = ViolinString.E;
     }
 
     public void loadGUIElements () {
@@ -317,5 +231,46 @@ public class PlayMode extends Activity {
         noteButton13 = findViewById(R.id.noteButton13);
         noteButton14 = findViewById(R.id.noteButton14);
         noteButton15 = findViewById(R.id.noteButton15);
+    }
+
+    void loadNotes() {
+
+        noteMap.put(R.raw.g3, soundPool.load(this, R.raw.g3, 0));
+        noteMap.put(R.raw.gsharp3, soundPool.load(this, R.raw.gsharp3, 0));
+        noteMap.put(R.raw.a3, soundPool.load(this, R.raw.a3, 0));
+        noteMap.put(R.raw.asharp3, soundPool.load(this, R.raw.asharp3, 0));
+        noteMap.put(R.raw.b3, soundPool.load(this, R.raw.b3, 0));
+        noteMap.put(R.raw.c4, soundPool.load(this, R.raw.c4, 0));
+        noteMap.put(R.raw.csharp4, soundPool.load(this, R.raw.csharp4, 0));
+        noteMap.put(R.raw.d4, soundPool.load(this, R.raw.d4, 0));
+        noteMap.put(R.raw.dsharp4, soundPool.load(this, R.raw.dsharp4, 0));
+        noteMap.put(R.raw.e4, soundPool.load(this, R.raw.e4, 0));
+        noteMap.put(R.raw.f4, soundPool.load(this, R.raw.f4, 0));
+        noteMap.put(R.raw.fsharp4, soundPool.load(this, R.raw.fsharp4, 0));
+        noteMap.put(R.raw.g4, soundPool.load(this, R.raw.g4, 0));
+        noteMap.put(R.raw.gsharp4, soundPool.load(this, R.raw.gsharp4, 0));
+        noteMap.put(R.raw.a4, soundPool.load(this, R.raw.a4, 0));
+        noteMap.put(R.raw.asharp4, soundPool.load(this, R.raw.asharp4, 0));
+        noteMap.put(R.raw.b4, soundPool.load(this, R.raw.b4, 0));
+        noteMap.put(R.raw.c5, soundPool.load(this, R.raw.c5, 0));
+        noteMap.put(R.raw.csharp5, soundPool.load(this, R.raw.csharp5, 0));
+        noteMap.put(R.raw.d5, soundPool.load(this, R.raw.d5, 0));
+        noteMap.put(R.raw.dsharp5, soundPool.load(this, R.raw.dsharp5, 0));
+        noteMap.put(R.raw.e5, soundPool.load(this, R.raw.e5, 0));
+        noteMap.put(R.raw.f5, soundPool.load(this, R.raw.f5, 0));
+        noteMap.put(R.raw.fsharp5, soundPool.load(this, R.raw.fsharp5, 0));
+        noteMap.put(R.raw.g5, soundPool.load(this, R.raw.g5, 0));
+        noteMap.put(R.raw.gsharp5, soundPool.load(this, R.raw.gsharp5, 0));
+        noteMap.put(R.raw.a5, soundPool.load(this, R.raw.a5, 0));
+        noteMap.put(R.raw.asharp5, soundPool.load(this, R.raw.asharp5, 0));
+        noteMap.put(R.raw.b5, soundPool.load(this, R.raw.b5, 0));
+        noteMap.put(R.raw.c6, soundPool.load(this, R.raw.c6, 0));
+        noteMap.put(R.raw.csharp6, soundPool.load(this, R.raw.csharp6, 0));
+        noteMap.put(R.raw.d6, soundPool.load(this, R.raw.d6, 0));
+        noteMap.put(R.raw.dsharp6, soundPool.load(this, R.raw.dsharp6, 0));
+        noteMap.put(R.raw.e6, soundPool.load(this, R.raw.e6, 0));
+        noteMap.put(R.raw.f6, soundPool.load(this, R.raw.f6, 0));
+        noteMap.put(R.raw.fsharp6, soundPool.load(this, R.raw.fsharp6, 0));
+        noteMap.put(R.raw.g6, soundPool.load(this, R.raw.g6, 0));
     }
 }

@@ -1,7 +1,6 @@
 package com.kashithekash.violinistica;
 
-import android.content.Context;
-import android.media.SoundPool;
+import android.view.View;
 
 import java.util.HashMap;
 
@@ -11,50 +10,111 @@ public class PlayModeHelper {
     // loaded
     HashMap<Integer, Integer> noteMap;
 
-    public int getNote (int note) {
-        return noteMap.get(note);
+    ViolinString currentViolinString;
+
+    public ViolinString getCurrentViolinString(float deltaRoll) {
+
+        if (deltaRoll <= -30)
+            currentViolinString = ViolinString.G;
+        else if (deltaRoll > -30 && deltaRoll <= -10)
+            currentViolinString = ViolinString.D;
+        else if (deltaRoll > -10 && deltaRoll <= 10)
+            currentViolinString = ViolinString.A;
+        else
+            currentViolinString = ViolinString.E;
+
+        return currentViolinString;
     }
 
-    public void loadNotes(SoundPool soundPool, Context context) {
+    public int getNote(ViolinString currentViolinString, View v, HashMap<Integer, Integer> noteMap) {
 
-        noteMap = new HashMap<Integer, Integer>();
+        int note = 0;
 
-        noteMap.put(R.raw.g3, soundPool.load(context, R.raw.g3, 0));
-        noteMap.put(R.raw.gsharp3, soundPool.load(context, R.raw.gsharp3, 0));
-        noteMap.put(R.raw.a3, soundPool.load(context, R.raw.a3, 0));
-        noteMap.put(R.raw.asharp3, soundPool.load(context, R.raw.asharp3, 0));
-        noteMap.put(R.raw.b3, soundPool.load(context, R.raw.b3, 0));
-        noteMap.put(R.raw.c4, soundPool.load(context, R.raw.c4, 0));
-        noteMap.put(R.raw.csharp4, soundPool.load(context, R.raw.csharp4, 0));
-        noteMap.put(R.raw.d4, soundPool.load(context, R.raw.d4, 0));
-        noteMap.put(R.raw.dsharp4, soundPool.load(context, R.raw.dsharp4, 0));
-        noteMap.put(R.raw.e4, soundPool.load(context, R.raw.e4, 0));
-        noteMap.put(R.raw.f4, soundPool.load(context, R.raw.f4, 0));
-        noteMap.put(R.raw.fsharp4, soundPool.load(context, R.raw.fsharp4, 0));
-        noteMap.put(R.raw.g4, soundPool.load(context, R.raw.g4, 0));
-        noteMap.put(R.raw.gsharp4, soundPool.load(context, R.raw.gsharp4, 0));
-        noteMap.put(R.raw.a4, soundPool.load(context, R.raw.a4, 0));
-        noteMap.put(R.raw.asharp4, soundPool.load(context, R.raw.asharp4, 0));
-        noteMap.put(R.raw.b4, soundPool.load(context, R.raw.b4, 0));
-        noteMap.put(R.raw.c5, soundPool.load(context, R.raw.c5, 0));
-        noteMap.put(R.raw.csharp5, soundPool.load(context, R.raw.csharp5, 0));
-        noteMap.put(R.raw.d5, soundPool.load(context, R.raw.d5, 0));
-        noteMap.put(R.raw.dsharp5, soundPool.load(context, R.raw.dsharp5, 0));
-        noteMap.put(R.raw.e5, soundPool.load(context, R.raw.e5, 0));
-        noteMap.put(R.raw.f5, soundPool.load(context, R.raw.f5, 0));
-        noteMap.put(R.raw.fsharp5, soundPool.load(context, R.raw.fsharp5, 0));
-        noteMap.put(R.raw.g5, soundPool.load(context, R.raw.g5, 0));
-        noteMap.put(R.raw.gsharp5, soundPool.load(context, R.raw.gsharp5, 0));
-        noteMap.put(R.raw.a5, soundPool.load(context, R.raw.a5, 0));
-        noteMap.put(R.raw.asharp5, soundPool.load(context, R.raw.asharp5, 0));
-        noteMap.put(R.raw.b5, soundPool.load(context, R.raw.b5, 0));
-        noteMap.put(R.raw.c6, soundPool.load(context, R.raw.c6, 0));
-        noteMap.put(R.raw.csharp6, soundPool.load(context, R.raw.csharp6, 0));
-        noteMap.put(R.raw.d6, soundPool.load(context, R.raw.d6, 0));
-        noteMap.put(R.raw.dsharp6, soundPool.load(context, R.raw.dsharp6, 0));
-        noteMap.put(R.raw.e6, soundPool.load(context, R.raw.e6, 0));
-        noteMap.put(R.raw.f6, soundPool.load(context, R.raw.f6, 0));
-        noteMap.put(R.raw.fsharp6, soundPool.load(context, R.raw.fsharp6, 0));
-        noteMap.put(R.raw.g6, soundPool.load(context, R.raw.g6, 0));
+        switch (currentViolinString) {
+            case G:
+                switch (v.getId()) {
+                    case R.id.playOpenStringButton:
+                        note = noteMap.get(R.raw.g3);
+                        break;
+                    case R.id.noteButton2:
+                        note = noteMap.get(R.raw.a3);
+                        break;
+                    case R.id.noteButton4:
+                        note = noteMap.get(R.raw.b3);
+                        break;
+                    case R.id.noteButton5:
+                        note = R.raw.c4;
+                        break;
+                    case R.id.noteButton7:
+                        note = R.raw.d4;
+                        break;
+                    default:
+                        break;
+                } break;
+            case D:
+                switch (v.getId()) {
+                    case R.id.playOpenStringButton:
+                        note = R.raw.d4;
+                        break;
+                    case R.id.noteButton2:
+                        note = R.raw.e4;
+                        break;
+                    case R.id.noteButton4:
+                        note = R.raw.fsharp4;
+                        break;
+                    case R.id.noteButton5:
+                        note = R.raw.g4;
+                        break;
+                    case R.id.noteButton7:
+                        note = R.raw.a4;
+                        break;
+                    default:
+                        break;
+                } break;
+            case A:
+                switch (v.getId()) {
+                    case R.id.playOpenStringButton:
+                        note = R.raw.a4;
+                        break;
+                    case R.id.noteButton2:
+                        note = R.raw.b4;
+                        break;
+                    case R.id.noteButton4:
+                        note = R.raw.csharp5;
+                        break;
+                    case R.id.noteButton5:
+                        note = R.raw.d5;
+                        break;
+                    case R.id.noteButton7:
+                        note = R.raw.e5;
+                        break;
+                    default:
+                        break;
+                } break;
+            case E:
+                switch (v.getId()) {
+                    case R.id.playOpenStringButton:
+                        note = R.raw.e5;
+                        break;
+                    case R.id.noteButton2:
+                        note = R.raw.fsharp5;
+                        break;
+                    case R.id.noteButton4:
+                        note = R.raw.gsharp5;
+                        break;
+                    case R.id.noteButton5:
+                        note = R.raw.a5;
+                        break;
+                    case R.id.noteButton7:
+                        note = R.raw.b5;
+                        break;
+                    default:
+                        break;
+                } break;
+            default:
+                break;
+        }
+
+        return note;
     }
 }

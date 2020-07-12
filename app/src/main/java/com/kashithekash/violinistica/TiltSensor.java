@@ -15,8 +15,6 @@ public class TiltSensor {
         float currentRoll;
         float deltaRoll;
 
-        PlayMode.ViolinString prevString = PlayMode.ViolinString.A;   // Again, A is the default for a lot of things
-
         @Override
         public void onSensorChanged(SensorEvent event) {
 
