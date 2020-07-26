@@ -21,6 +21,7 @@ public class PlayMode extends Activity {
     PlayModeHelper playModeHelper;
 
     // Sensor stuff
+    final int sensorDelay = 1000; // Sensor delay in microseconds; 1000 microsec. is 1/1000th of a second.
     SensorManager sensorManager;
     Sensor rvSensor;        // Rotation Vector sensor; uses accelerometer and magnetic field sensors
 
@@ -28,23 +29,19 @@ public class PlayMode extends Activity {
     SoundPool soundPool;
     boolean isLoaded = false;   // Whether the SoundPool instance has loaded
 
+    // Stream id of current soundpool audio
+    int streamID = -1;
+
     // AudioManager instance
     AudioManager audioManager;
 
-    // A is the default for lots of things
-    ViolinString currentViolinString = ViolinString.A;
-
     // A HashMap to load the notes for SoundPool
-    HashMap<Integer, Integer> noteMap;
+    HashMap<Integer, Integer> noteMap = new HashMap<Integer, Integer>();
 
-    // Current note
-    String currentNote;     // Format dsharp5, e6, etc.
-    int currentNoteID;      // R.raw.a3, etc.
-    int streamID = -1;
-    int notePlaying = 0;
+    // Current button being touched
+    View currentlyTouchedView = null;
 
     // Detecting when the note to play has changed
-    boolean stringChanged = false;
     boolean highestFingerChanged = false;
 
     // GUI stuff; this will all get prettified eventually
@@ -55,26 +52,17 @@ public class PlayMode extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.play_mode_layout);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        sensorManager.registerListener(sensorEventListener, rvSensor, SensorManager.SENSOR_DELAY_NORMAL);
 
         playModeHelper = new PlayModeHelper();
+        playModeHelper.setNoteMap(noteMap);
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         rvSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
-
-        playOpenStringButton.setOnTouchListener(touchListener);
-        noteButton2.setOnTouchListener(touchListener);
-        noteButton4.setOnTouchListener(touchListener);
-        noteButton5.setOnTouchListener(touchListener);
-        noteButton7.setOnTouchListener(touchListener);
+        sensorManager.registerListener(tiltChangeListener, rvSensor, sensorDelay);
 
         audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
@@ -89,29 +77,36 @@ public class PlayMode extends Activity {
 
         loadGUIElements();
         loadNotes();
+        registerListeners();
+    }
+
+    @Override
+    protected void onStart() {
+
+        super.onStart();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        sensorManager.registerListener(sensorEventListener, rvSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(tiltChangeListener, rvSensor, sensorDelay);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        sensorManager.unregisterListener(sensorEventListener);
+        sensorManager.unregisterListener(tiltChangeListener);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        sensorManager.unregisterListener(sensorEventListener);
-        soundPool.release();
+        sensorManager.unregisterListener(tiltChangeListener);
+        if (soundPool != null) soundPool.release();
         soundPool = null;
     }
 
-    SensorEventListener sensorEventListener = new SensorEventListener() {
+    SensorEventListener tiltChangeListener = new SensorEventListener() {
 
         boolean initialRollSet = false;
 
@@ -119,20 +114,26 @@ public class PlayMode extends Activity {
         float currentRoll;
         float deltaRoll;
 
-        ViolinString prevString = ViolinString.A;   // Again, A is the default for a lot of things
+        int notePlaying = -1;
+        int noteToPlay = -1;
 
         @Override
         public void onSensorChanged(SensorEvent event) {
 
             if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
-
                 updateRoll(event);
-                playModeHelper.getCurrentViolinString(deltaRoll);
+            }
 
-                if (!stringChanged && currentViolinString != prevString) {
-                    stringChanged = true;
-                    prevString = currentViolinString;
-                }
+            updateCurrentViolinString(deltaRoll);
+
+            noteToPlay = updateNote();
+
+            if (noteToPlay != notePlaying) {
+
+                stopNote(streamID);
+                playNote(noteToPlay);
+
+                notePlaying = noteToPlay;
             }
         }
 
@@ -168,50 +169,38 @@ public class PlayMode extends Activity {
         }
     };
 
-    OnTouchListener touchListener = new OnTouchListener() {
-
-        boolean isHeld = true;
+    OnTouchListener buttonListener = new OnTouchListener() {
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
 
-            // Sets a flag so we can change sound when string changes
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                isHeld = false;
-                stopNote(streamID);
-                currentNoteID = 0;
-                notePlaying = 0;
-                currentNote = "None";
-                return false;
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                playModeHelper.updateFingerPosition(v);
+
             }
 
-            if (currentNoteID != playModeHelper.getNote(currentViolinString, v, noteMap)) {
-                if (streamID != -1) stopNote(streamID);
-                currentNoteID = playModeHelper.getNote(currentViolinString, v, noteMap);
-                streamID = playNote(currentNoteID);
-            }
-
+            else if (event.getAction() == MotionEvent.ACTION_UP)
+                playModeHelper.updateFingerPosition(null);
+            
             return false;
         }
     };
 
-    GUIListeners.ButtonListener buttonListener = new GUIListeners.ButtonListener() {
+    int updateNote() {
+        return playModeHelper.getNote();
+    }
 
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-
-            
-
-            return super.onTouch(v, event);
-        }
-    };
-
-    int playNote(int note) {
-        return soundPool.play(note, 1, 1, 0, -1, 1);
+    void playNote(int note) {
+        this.streamID = soundPool.play(note, 1, 1, 0, -1, 1);
     }
 
     void stopNote(int streamID) {
-        soundPool.stop(streamID);
+        if (streamID != -1) soundPool.stop(streamID);
+        this.streamID = -1;
+    }
+
+    void updateCurrentViolinString(float deltaRoll) {
+        playModeHelper.updateViolinString(deltaRoll);
     }
 
     public void loadGUIElements () {
@@ -273,5 +262,24 @@ public class PlayMode extends Activity {
         noteMap.put(R.raw.f6, soundPool.load(this, R.raw.f6, 0));
         noteMap.put(R.raw.fsharp6, soundPool.load(this, R.raw.fsharp6, 0));
         noteMap.put(R.raw.g6, soundPool.load(this, R.raw.g6, 0));
+    }
+
+    void registerListeners () {
+        playOpenStringButton.setOnTouchListener(buttonListener);
+        noteButton1.setOnTouchListener(buttonListener);
+        noteButton2.setOnTouchListener(buttonListener);
+        noteButton3.setOnTouchListener(buttonListener);
+        noteButton4.setOnTouchListener(buttonListener);
+        noteButton5.setOnTouchListener(buttonListener);
+        noteButton6.setOnTouchListener(buttonListener);
+        noteButton7.setOnTouchListener(buttonListener);
+        noteButton8.setOnTouchListener(buttonListener);
+        noteButton9.setOnTouchListener(buttonListener);
+        noteButton10.setOnTouchListener(buttonListener);
+        noteButton11.setOnTouchListener(buttonListener);
+        noteButton12.setOnTouchListener(buttonListener);
+        noteButton13.setOnTouchListener(buttonListener);
+        noteButton14.setOnTouchListener(buttonListener);
+        noteButton15.setOnTouchListener(buttonListener);
     }
 }
