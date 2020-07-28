@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/playModeLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_weight="0.5"
+    android:orientation="horizontal"
+    android:background="@color/background"
+    tools:context=".PlayMode">
+
+    <SeekBar
+        android:id="@+id/tiltIndicator"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:progressTint="@color/progressTint"
+        android:progressBackgroundTint="@color/progressBackground"
+        android:progressBackgroundTintMode="src_over"
+        android:thumbTint="@color/transparent"
+        android:splitTrack="false"
+        app:layout_constraintWidth_percent="1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <Button
+        android:id="@+id/activitySwitchButton"
+        android:background="@color/backgroundLight"
+        android:textColor="@color/text"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/playOpenStringButton"
+        app:layout_constraintTop_toBottomOf="@id/tiltIndicator"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+    <Button
+        android:id="@+id/playOpenStringButton"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/backgroundLight"
+        android:textColor="@color/text"
+        android:layout_marginBottom="10dp"
+        android:text="Open String"
+        app:layout_constraintWidth_percent="0.4"
+        app:layout_constraintLeft_toRightOf="@id/activitySwitchButton"
+        app:layout_constraintRight_toLeftOf="@id/noteButtonHolder"
+        app:layout_constraintTop_toBottomOf="@id/tiltIndicator"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <LinearLayout
+        android:id="@+id/noteButtonHolder"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintLeft_toRightOf="@id/playOpenStringButton"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tiltIndicator"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <Button
+            android:id="@+id/noteButton1"
+            android:background="@color/backgroundLight"
+            android:textColor="@color/text"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="1"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/noteButton2"
+            />
+
+        <Button
+            android:id="@+id/noteButton2"
+            android:background="@color/backgroundLight"
+            android:textColor="@color/text"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="2"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton1"
+            app:layout_constraintBottom_toTopOf="@id/noteButton3"/>
+
+        <Button
+            android:id="@+id/noteButton3"
+            android:background="@color/backgroundLight"
+            android:textColor="@color/text"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="3"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton2"
+            app:layout_constraintBottom_toTopOf="@id/noteButton4"/>
+
+        <Button
+            android:id="@+id/noteButton4"
+            android:background="@color/backgroundLight"
+            android:textColor="@color/text"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="4"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton3"
+            app:layout_constraintBottom_toTopOf="@id/noteButton5"/>
+
+        <Button
+            android:id="@+id/noteButton5"
+            android:background="@color/backgroundLight"
+            android:textColor="@color/text"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="5"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton4"
+            app:layout_constraintBottom_toTopOf="@id/noteButton6"/>
+
+        <Button
+            android:id="@+id/noteButton6"
+            android:background="@color/backgroundLight"
+            android:textColor="@color/text"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="6"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton5"
+            app:layout_constraintBottom_toTopOf="@id/noteButton7"/>
+
+        <Button
+            android:id="@+id/noteButton7"
+            android:background="@color/backgroundLight"
+            android:textColor="@color/text"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="7"
+            android:textAllCaps="true"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton6"
+            app:layout_constraintBottom_toTopOf="@id/noteButton8"  />
+
+        <Button
+            android:id="@+id/noteButton8"
+            android:background="@color/backgroundLight"
+            android:textColor="@color/text"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="8"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton7"
+            app:layout_constraintBottom_toTopOf="@id/noteButton9"/>
+
+        <Button
+            android:id="@+id/noteButton9"
+            android:background="@color/backgroundLight"
+            android:textColor="@color/text"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="9"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton8"
+            app:layout_constraintBottom_toTopOf="@id/noteButton10" />
+
+        <Button
+            android:id="@+id/noteButton10"
+            android:background="@color/backgroundLight"
+            android:textColor="@color/text"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="10"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton9"
+            app:layout_constraintBottom_toTopOf="@id/noteButton11" />
+
+        <Button
+            android:id="@+id/noteButton11"
+            android:background="@color/backgroundLight"
+            android:textColor="@color/text"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="11"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton10"
+            app:layout_constraintBottom_toTopOf="@id/noteButton12"/>
+
+        <Button
+            android:id="@+id/noteButton12"
+            android:background="@color/backgroundLight"
+            android:textColor="@color/text"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="12"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton11"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/customiseModeLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_weight="0.5"
+    android:orientation="horizontal"
+    android:background="@color/background"
+    tools:context=".CustomiseMode">
+
+    <Button
+        android:id="@+id/activitySwitchButton"
+        android:background="@color/backgroundLight"
+        android:textColor="@color/text"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="10dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/playOpenStringButton"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/stringTiltRangeSliderView"
+        />
+
+    <Button
+        android:id="@+id/playOpenStringButton"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/backgroundLight"
+        android:textColor="@color/text"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:text="Visible"
+        app:layout_constraintWidth_percent="0.4"
+        app:layout_constraintHeight_percent="0.8"
+        app:layout_constraintLeft_toRightOf="@id/activitySwitchButton"
+        app:layout_constraintRight_toLeftOf="@id/noteButtonHolder"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/calibrateButton"/>
+
+    <Button
+        android:id="@+id/calibrateButton"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/backgroundLight"
+        android:textColor="@color/text"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:text="Calibrate"
+        app:layout_constraintWidth_percent="0.4"
+        app:layout_constraintLeft_toRightOf="@id/activitySwitchButton"
+        app:layout_constraintRight_toLeftOf="@id/noteButtonHolder"
+        app:layout_constraintTop_toBottomOf="@id/playOpenStringButton"
+        app:layout_constraintBottom_toTopOf="@id/stringTiltRangeSliderView"/>
+
+    <LinearLayout
+        android:id="@+id/noteButtonHolder"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:layout_marginTop="10dp"
+        app:layout_constraintLeft_toRightOf="@id/playOpenStringButton"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/stringTiltRangeSliderView">
+
+        <Button
+            android:id="@+id/noteButton1"
+            android:background="@color/backgroundLight"
+            android:textColor="@color/text"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="Visible"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/noteButton2"
+            />
+
+        <Button
+            android:id="@+id/noteButton2"
+            android:background="@color/backgroundLight"
+            android:textColor="@color/text"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="Visible"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton1"
+            app:layout_constraintBottom_toTopOf="@id/noteButton3"/>
+
+        <Button
+            android:id="@+id/noteButton3"
+            android:background="@color/backgroundLight"
+            android:textColor="@color/text"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="Visible"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton2"
+            app:layout_constraintBottom_toTopOf="@id/noteButton4"/>
+
+        <Button
+            android:id="@+id/noteButton4"
+            android:background="@color/backgroundLight"
+            android:textColor="@color/text"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="Visible"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton3"
+            app:layout_constraintBottom_toTopOf="@id/noteButton5"/>
+
+        <Button
+            android:id="@+id/noteButton5"
+            android:background="@color/backgroundLight"
+            android:textColor="@color/text"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="Visible"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton4"
+            app:layout_constraintBottom_toTopOf="@id/noteButton6"/>
+
+        <Button
+            android:id="@+id/noteButton6"
+            android:background="@color/backgroundLight"
+            android:textColor="@color/text"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="Visible"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton5"
+            app:layout_constraintBottom_toTopOf="@id/noteButton7"/>
+
+        <Button
+            android:id="@+id/noteButton7"
+            android:background="@color/backgroundLight"
+            android:textColor="@color/text"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="Visible"
+            android:textAllCaps="true"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton6"
+            app:layout_constraintBottom_toTopOf="@id/noteButton8"  />
+
+        <Button
+            android:id="@+id/noteButton8"
+            android:background="@color/backgroundLight"
+            android:textColor="@color/text"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="Visible"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton7"
+            app:layout_constraintBottom_toTopOf="@id/noteButton9"/>
+
+        <Button
+            android:id="@+id/noteButton9"
+            android:background="@color/backgroundLight"
+            android:textColor="@color/text"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="Visible"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton8"
+            app:layout_constraintBottom_toTopOf="@id/noteButton10" />
+
+        <Button
+            android:id="@+id/noteButton10"
+            android:background="@color/backgroundLight"
+            android:textColor="@color/text"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="Visible"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton9"
+            app:layout_constraintBottom_toTopOf="@id/noteButton11" />
+
+        <Button
+            android:id="@+id/noteButton11"
+            android:background="@color/backgroundLight"
+            android:textColor="@color/text"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="Visible"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton10"
+            app:layout_constraintBottom_toTopOf="@id/noteButton12"/>
+
+        <Button
+            android:id="@+id/noteButton12"
+            android:background="@color/backgroundLight"
+            android:textColor="@color/text"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="Visible"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton11"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/stringTiltRangeSliderView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:gravity="center"
+                android:textColor="@color/textDarker"
+                android:textAllCaps="true"
+                android:text="String Tilt Range:"
+                />
+            <TextView
+                android:id="@+id/currentStringTiltRange"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@color/text"
+                android:textAllCaps="true" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/str_min"
+                android:layout_width="20dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:gravity="center"
+                android:textColor="@color/textDarker"
+                android:textAllCaps="true" />
+
+            <SeekBar
+                android:id="@+id/stringTiltRangeSlider"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:progressTint="@color/progressTint"
+                android:progressBackgroundTint="@color/progressBackground"
+                android:progressBackgroundTintMode="src_over"
+                android:thumbTint="@color/progressTint"
+                android:splitTrack="false"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent" />
+
+            <TextView
+                android:id="@+id/str_max"
+                android:layout_width="20dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:gravity="center"
+                android:textColor="@color/textDarker"
+                android:textAllCaps="true" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

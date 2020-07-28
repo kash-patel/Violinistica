@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="transparent">#0000</color>
+
+    <color name="colorPrimary">#F2F2F2</color>
+    <color name="colorPrimaryDark">#929292</color>
+    <color name="colorAccent">#03DAC5</color>
+
+    <color name="text">#00FFDD</color>
+    <color name="textDarker">#009977</color>
+    <color name="background">#1E2127</color>
+    <color name="backgroundLight">#2E3137</color>
+    <color name="progressTint">#00FFDD</color>
+    <color name="progressBackground">#009977</color>
+</resources>
