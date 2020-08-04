@@ -3,14 +3,16 @@ package com.kashithekash.violinistica;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -19,39 +21,35 @@ import android.widget.SeekBar;
 
 import java.util.HashMap;
 
+/**
+ * The PlayMode Activity is the app's default activity, and is where the user will spend most of
+ * their time. It handles tilt detection and playing the notes' sound files.
+ */
 public class PlayMode extends Activity {
 
     PlayModeHelper playModeHelper;
 
-    // Sensor stuff
-//    final int sensorDelay = 1000; // Sensor delay in microseconds; 1000 microsec. is 1/1000th of a second.
     SensorManager sensorManager;
     Sensor rvSensor;        // Rotation Vector sensor; uses accelerometer and magnetic field sensors
 
-    // SoundPool instance
+    Vibrator v;
+
     SoundPool soundPool;
     boolean isLoaded = false;   // Whether the SoundPool instance has loaded
 
     // Stream id of current soundpool audio
     int streamID = -1;
 
-    // AudioManager instance
     AudioManager audioManager;
 
     // A HashMap to load the notes for SoundPool
     HashMap<Integer, Integer> noteMap = new HashMap<Integer, Integer>();
 
-    // Current button being touched
-    View currentlyTouchedView = null;
-
-    // Detecting when the note to play has changed
-    boolean highestFingerChanged = false;
-
-    // GUI stuff; this will all get prettified eventually
     Button playOpenStringButton, noteButton1, noteButton2, noteButton3,
             noteButton4, noteButton5, noteButton6, noteButton7,
             noteButton8, noteButton9, noteButton10, noteButton11,
             noteButton12, activitySwitchButton;
+    Button[] noteButtons;
     SeekBar tiltIndicator;
     float initialRoll;
 
@@ -71,6 +69,8 @@ public class PlayMode extends Activity {
         rvSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
         sensorManager.registerListener(tiltChangeListener, rvSensor, SensorManager.SENSOR_DELAY_GAME);
 
+         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
         audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
@@ -83,9 +83,9 @@ public class PlayMode extends Activity {
         });
 
         loadGUIElements();
-        loadNotes();
+        loadButtonArray();
+        loadNotes();        // SoundPool requires sound files to be loaded before they can be played
         registerListeners();
-
         setButtonVisibilities();
     }
 
@@ -97,6 +97,8 @@ public class PlayMode extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        // This happens after we return from the CustomiseMode ability
         setButtonVisibilities();
         setStringTiltRange();
         setInitialRoll();
@@ -110,11 +112,11 @@ public class PlayMode extends Activity {
     @Override
     protected void onStop() {
         super.onStop();
-//        sensorManager.unregisterListener(tiltChangeListener);
-//        if (soundPool != null) soundPool.release();
-//        soundPool = null;
     }
 
+    /**
+     * Handles all events related to changes in device tilt.
+     */
     private SensorEventListener tiltChangeListener = new SensorEventListener() {
 
         boolean initialRollSet = false;
@@ -128,6 +130,14 @@ public class PlayMode extends Activity {
         ViolinString prevString = null;
         ViolinString currString = null;
 
+        /**
+         * Updates value of deltaRoll stored in the local instance of PlayModeHelper, detects when
+         * the current violin string changes, and causes device vibration when it does. If a note
+         * is playing when the string changes, this function stops the sound file and starts the new
+         * correct one.
+         *
+         * @param event any event detected by the device's many sensors.
+         */
         @Override
         public void onSensorChanged(SensorEvent event) {
 
@@ -138,9 +148,17 @@ public class PlayMode extends Activity {
 
             updateCurrentViolinString();
 
-            if (currString != playModeHelper.currentViolinString) {
+            if (currString != playModeHelper.getCurrentViolinString()) {
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    v.vibrate(VibrationEffect.createOneShot(5, VibrationEffect.DEFAULT_AMPLITUDE));
+                } else {
+                    //deprecated in API 26
+                    v.vibrate(5);
+                }
+
                 prevString = currString;
-                currString = playModeHelper.currentViolinString;
+                currString = playModeHelper.getCurrentViolinString();
                 updateNoteButtonText();
             }
 
@@ -162,6 +180,12 @@ public class PlayMode extends Activity {
 
         }
 
+        /**
+         * Isolates device tilt along y axis (the axis parallel to the long side) and sets the value
+         * of local float deltaRoll to that value.
+         *
+         * @param event a device rotation event
+         */
         private void updateRoll (SensorEvent event) {
 
             float[] rotationMatrix = new float[9];
@@ -190,9 +214,12 @@ public class PlayMode extends Activity {
         }
     };
 
+    /**
+     * This is the OnTouchListener attached to the buttons used to play notes. When touched it tells
+     * the local instance of PlayModeHelper which button was touched, and updates the button's
+     * background and text colours to indicate that it is being touched.
+     */
     private OnTouchListener noteButtonListener = new OnTouchListener() {
-
-        Rect r;
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
@@ -212,70 +239,84 @@ public class PlayMode extends Activity {
         }
     };
 
+    /**
+     * @return note sound file ID from the HashMap in the local instance of PlayModeHelper.
+     */
     private int updateNote() {
         return playModeHelper.getNote();
     }
 
+    /**
+     * Sets the local int streamID to the value returned when SoundPool plays the sound file
+     * whose resource ID is the value of the argument note.
+     * @param note int ID of the note sound file.
+     */
     private void playNote(int note) {
-        this.streamID = soundPool.play(note, 1, 1, 0, -1, 1);
+        streamID = soundPool.play(note, 1, 1, 0, -1, 1);
     }
 
+    /**
+     * Stops the sound whose stream ID is argument streamID and sets local int streamID to -1.
+     *
+     * @param streamID int ID of the currently playing note.
+     */
     private void stopNote(int streamID) {
         if (streamID != -1) soundPool.stop(streamID);
         this.streamID = -1;
     }
 
+    /**
+     * Sets value of local float initialRoll to the value provided by the Constants class.
+     */
     private void setInitialRoll() {
         initialRoll = Constants.getInitialRoll();
     }
 
+    /**
+     * Tells local instance of PlayModeHelper to set the value of string tilt range to the value
+     * provided by the Constants class.
+     */
     private void setStringTiltRange() {
         playModeHelper.setStringTiltRange(Constants.getStringTiltRange());
     }
 
+    /**
+     * Tells local instance of PlayModeHelper to update its value of current violin string.
+     */
     private void updateCurrentViolinString() {
         playModeHelper.updateViolinString();
     }
 
+    /**
+     * Tells local instance of PlayModeHelper to update the tilt indicator SeekBar.
+     */
     private void updateTiltIndicator() {
         playModeHelper.updateTiltIndicator(tiltIndicator);
     }
 
+    /**
+     * Sets the text of each note button to match the note it will play if touched.
+     */
     private void updateNoteButtonText() {
 
-        playOpenStringButton.setText(playModeHelper.getNoteString(R.id.playOpenStringButton));
-        noteButton1.setText(playModeHelper.getNoteString(R.id.noteButton1));
-        noteButton2.setText(playModeHelper.getNoteString(R.id.noteButton2));
-        noteButton3.setText(playModeHelper.getNoteString(R.id.noteButton3));
-        noteButton4.setText(playModeHelper.getNoteString(R.id.noteButton4));
-        noteButton5.setText(playModeHelper.getNoteString(R.id.noteButton5));
-        noteButton6.setText(playModeHelper.getNoteString(R.id.noteButton6));
-        noteButton7.setText(playModeHelper.getNoteString(R.id.noteButton7));
-        noteButton8.setText(playModeHelper.getNoteString(R.id.noteButton8));
-        noteButton9.setText(playModeHelper.getNoteString(R.id.noteButton9));
-        noteButton10.setText(playModeHelper.getNoteString(R.id.noteButton10));
-        noteButton11.setText(playModeHelper.getNoteString(R.id.noteButton11));
-        noteButton12.setText(playModeHelper.getNoteString(R.id.noteButton12));
-
+        for (Button button : noteButtons) {
+            button.setText(playModeHelper.getNoteString(button.getId()));
+        }
     }
 
+    /**
+     * Sets the visibility of each note button to the values provided by the Constants class.
+     */
     private void setButtonVisibilities() {
 
-        playOpenStringButton.setVisibility(Constants.getButtonVisibility(R.id.playOpenStringButton));
-        noteButton1.setVisibility(Constants.getButtonVisibility(R.id.noteButton1));
-        noteButton2.setVisibility(Constants.getButtonVisibility(R.id.noteButton2));
-        noteButton3.setVisibility(Constants.getButtonVisibility(R.id.noteButton3));
-        noteButton4.setVisibility(Constants.getButtonVisibility(R.id.noteButton4));
-        noteButton5.setVisibility(Constants.getButtonVisibility(R.id.noteButton5));
-        noteButton6.setVisibility(Constants.getButtonVisibility(R.id.noteButton6));
-        noteButton7.setVisibility(Constants.getButtonVisibility(R.id.noteButton7));
-        noteButton8.setVisibility(Constants.getButtonVisibility(R.id.noteButton8));
-        noteButton9.setVisibility(Constants.getButtonVisibility(R.id.noteButton9));
-        noteButton10.setVisibility(Constants.getButtonVisibility(R.id.noteButton10));
-        noteButton11.setVisibility(Constants.getButtonVisibility(R.id.noteButton11));
-        noteButton12.setVisibility(Constants.getButtonVisibility(R.id.noteButton12));
+        for (Button button : noteButtons) {
+            button.setVisibility(Constants.getButtonVisibility(button.getId()));
+        }
     }
 
+    /**
+     * Initialises all play mode GUI elements.
+     */
     private void loadGUIElements () {
 
         playOpenStringButton = findViewById(R.id.playOpenStringButton);
@@ -295,6 +336,21 @@ public class PlayMode extends Activity {
         tiltIndicator = findViewById(R.id.tiltIndicator);
     }
 
+    /**
+     * Stores initialised note button variables into an array for easy iteration.
+     */
+    private void loadButtonArray() {
+
+        noteButtons = new Button[] { playOpenStringButton, noteButton1, noteButton2, noteButton3,
+                noteButton4, noteButton5, noteButton6, noteButton7,
+                noteButton8, noteButton9, noteButton10, noteButton11,
+                noteButton12 };
+    }
+
+    /**
+     * Loads each note's sound file using the local SoundPool instance and places it (using its
+     * resource ID) in the local HashMap noteMap.
+     */
     private void loadNotes() {
 
         noteMap.put(R.raw.g3, soundPool.load(this, R.raw.g3, 0));
@@ -336,20 +392,15 @@ public class PlayMode extends Activity {
         noteMap.put(R.raw.g6, soundPool.load(this, R.raw.g6, 0));
     }
 
+    /**
+     * Attaches appropriate touch listeners to all interactive GUI elements.
+     */
     private void registerListeners () {
-        playOpenStringButton.setOnTouchListener(noteButtonListener);
-        noteButton1.setOnTouchListener(noteButtonListener);
-        noteButton2.setOnTouchListener(noteButtonListener);
-        noteButton3.setOnTouchListener(noteButtonListener);
-        noteButton4.setOnTouchListener(noteButtonListener);
-        noteButton5.setOnTouchListener(noteButtonListener);
-        noteButton6.setOnTouchListener(noteButtonListener);
-        noteButton7.setOnTouchListener(noteButtonListener);
-        noteButton8.setOnTouchListener(noteButtonListener);
-        noteButton9.setOnTouchListener(noteButtonListener);
-        noteButton10.setOnTouchListener(noteButtonListener);
-        noteButton11.setOnTouchListener(noteButtonListener);
-        noteButton12.setOnTouchListener(noteButtonListener);
+
+        for (Button button : noteButtons) {
+            button.setOnTouchListener(noteButtonListener);
+        }
+
         activitySwitchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -357,9 +408,13 @@ public class PlayMode extends Activity {
                 startActivity(intent);
             }
         });
+
         tiltIndicator.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                // This is necessary because without it, the user would be able to change the tilt
+                // indicator SeekBar's progress interactively. We want to do it prorammatically.
+                // Returning true redirects the touch input and so the SeekBar is unaffected by it.
                 return true;
             }
         });

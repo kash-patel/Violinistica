@@ -4,6 +4,10 @@ import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
+/**
+ * This class is used to store app-wide constants including maximum and minimum values for
+ * string tilt range, as well as settings changed in CustomiseMode.
+ */
 public class Constants {
 
     private static float stringTiltRange = 30f;
@@ -19,22 +23,48 @@ public class Constants {
 
     private static float initialRoll;
 
-    public static void setInitialRoll(float i) {
-        initialRoll = i;
+    /**
+     * Sets local float initialRoll to the value of argument newInitialRoll
+     *
+     * @param newInitialRoll
+     */
+    public static void setInitialRoll(float newInitialRoll) {
+        initialRoll = newInitialRoll;
     }
 
+    /**
+     * Returns value of local float initialRoll.
+     *
+     * @return initialRoll
+     */
     public static float getInitialRoll() {
         return initialRoll;
     }
 
+    /**
+     * Returns value of local float stringTiltRange.
+     *
+     * @return stringTiltRange
+     */
     public static float getStringTiltRange() {
         return stringTiltRange;
     }
 
-    public static void setStringTiltRange(float str) {
-        stringTiltRange = str;
+    /**
+     * Sets value of local float stringTiltRange to the value of argument newStringTiltRange.
+     *
+     * @param newStringTiltRange
+     */
+    public static void setStringTiltRange(float newStringTiltRange) {
+        stringTiltRange = newStringTiltRange;
     }
 
+    /**
+     * Given the ID of a View, sets what its new visibility should be and stores the value
+     * in the local int array buttonVisibilities.
+     *
+     * @param viewID ID of a View
+     */
     public static void toggleButtonVisibility(int viewID) {
 
         int index = 0;
@@ -97,6 +127,11 @@ public class Constants {
         buttonVisibilities[index] = visibility;
     }
 
+    /**
+     * @param viewID ID of a View
+     * @return int value stored in the local int array buttonVisibilities, representing what the
+     * visibility of the corresponding View should be.
+     */
     public static int getButtonVisibility(int viewID) {
         switch (viewID) {
             case R.id.noteButton1:

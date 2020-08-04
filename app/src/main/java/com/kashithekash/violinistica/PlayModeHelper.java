@@ -5,54 +5,92 @@ import android.widget.SeekBar;
 
 import java.util.HashMap;
 
+/**
+ * This class is referenced by the PlayMode class. It's purpose is to handle play mode functions
+ * that are related to and affect the note playing functionality. In particular, this class is used
+ * for:
+ *     Determining current violin string based on device tilt,
+ *     Determining which note should be played based on current violin string and currently touched
+ *         button,
+ *     Determining what each button's label should be based on the button and current violin string,
+ *     and updating the string tilt indicator.
+ */
 public class PlayModeHelper {
 
     private float deltaRoll = 0f;
-    // Map of notes. SoundPool must access notes via noteMap, because this is where they have been
-    // loaded
-    HashMap<Integer, Integer> noteMap;
 
-    ViolinString currentViolinString = ViolinString.A;
-    View fingerPosition = null;
+    private HashMap<Integer, Integer> noteMap;
 
-    float stringTiltRange = 30f;
+    private ViolinString currentViolinString = ViolinString.A;
+    private View fingerPosition = null;
 
-    String[] gNotes = {"G", "G#", "A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#"};
-    String[] dNotes = {"D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B", "C", "C#"};
-    String[] aNotes = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
-    String[] eNotes = {"E", "F", "F#", "G", "G#", "A", "A#", "B", "C", "C#", "D", "D#"};
+    private float stringTiltRange = 30f;
 
-    String[] currentStringNotes = aNotes;
+    private String[] gStringNotes = {"G", "G#", "A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#"};
+    private String[] dStringNotes = {"D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B", "C", "C#"};
+    private String[] aStringNotes = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
+    private String[] eStringNotes = {"E", "F", "F#", "G", "G#", "A", "A#", "B", "C", "C#", "D", "D#"};
+    private String[] currentStringNotes = null;
 
-    public void updateDeltaRoll(float deltaRoll) {
-        this.deltaRoll = deltaRoll;
+    /**
+     * Sets local float deltaRoll to the value of the argument newDeltaRoll.
+     *
+     * @param newDeltaRoll
+     */
+    public void updateDeltaRoll(float newDeltaRoll) {
+        deltaRoll = newDeltaRoll;
     }
 
+    /**
+     * Determines what the current violin string should be based on deltaRoll and stringTiltRange.
+     * Also sets the local String array currentStringNotes to point to gStringNotes, dStringNotes,
+     * aStringNotes, or eStringNotes, depending on what the current violin string is determined to
+     * be.
+     */
     public void updateViolinString() {
 
         if (deltaRoll <= -stringTiltRange && currentViolinString != ViolinString.E) {
             currentViolinString = ViolinString.E;
-            currentStringNotes = eNotes;
+            currentStringNotes = eStringNotes;
         } else if (deltaRoll > -stringTiltRange && deltaRoll <= 0 && currentViolinString != ViolinString.A) {
             currentViolinString = ViolinString.A;
-            currentStringNotes = aNotes;
+            currentStringNotes = aStringNotes;
         } else if (deltaRoll > 0 && deltaRoll <= stringTiltRange && currentViolinString != ViolinString.D) {
             currentViolinString = ViolinString.D;
-            currentStringNotes = dNotes;
+            currentStringNotes = dStringNotes;
         } else if (deltaRoll > stringTiltRange && currentViolinString != ViolinString.G) {
             currentViolinString = ViolinString.G;
-            currentStringNotes = gNotes;
+            currentStringNotes = gStringNotes;
         }
     }
 
-    public void setStringTiltRange(float str) {
-        stringTiltRange = str;
+    /**
+     * Sets local float stringTiltRange to the value of argument newStringTiltRange
+     *
+     * @param newStringTiltRange
+     */
+    public void setStringTiltRange(float newStringTiltRange) {
+        stringTiltRange = newStringTiltRange;
     }
 
-    public void updateFingerPosition(View v) {
-        fingerPosition = v;
+    /**
+     * Sets local View fingerPosition to point to argument currentlyTouchedButton. This
+     * represents where on the string the finger is currently placed, and therefore is used to
+     * determine which note needs to be played.
+     *
+     * @param currentlyTouchedButton
+     */
+    public void updateFingerPosition(View currentlyTouchedButton) {
+        fingerPosition = currentlyTouchedButton;
     }
 
+    /**
+     * Updates the progress of the tilt indicator to reflect the current value of float deltaRoll with
+     * respect to string tilt range. It also flips the SeekBar as needed, since it indicates how far
+     * from the centre tilt the device has been rotated.
+     *
+     * @param tiltIndicator
+     */
     public void updateTiltIndicator(SeekBar tiltIndicator) {
 
         if (deltaRoll >= 0 && tiltIndicator.getScaleX() == 1) tiltIndicator.setScaleX(-1);
@@ -65,6 +103,16 @@ public class PlayModeHelper {
         tiltIndicator.setProgress(progress);
     }
 
+    /**
+     * Based on local View fingerPosition and ViolinString currentViolinString, this function determines
+     * which note must be played and return the hash map in which the notes' sound file IDs are
+     * loaded. Note that it MUST return the IDs from the hash map, since SoundPool can only
+     * play sound files that have been loaded first.
+     *
+     * Internal variables:
+     *     note: int; represents the ID of the sound file of the corresponding note.
+     * @return note
+     */
     public int getNote() {
 
         int note = -1;
@@ -259,6 +307,21 @@ public class PlayModeHelper {
         return note;
     }
 
+    /**
+     * Returns value of local ViolinString currentViolinString
+     * @return currentViolinString
+     */
+    public ViolinString getCurrentViolinString() {
+        return currentViolinString;
+    }
+
+    /**
+     * Based on the given view ID, determines and returns what the button's label should be.
+     *
+     * @param viewID
+     * @return the string (from local String array currentStringNotes) representing the note that
+     * each button must play
+     */
     public String getNoteString(int viewID) {
 
         switch (viewID) {
@@ -292,6 +355,11 @@ public class PlayModeHelper {
         }
     }
 
+    /**
+     * Sets local HashMap noteMap to point to argument noteMap.
+     *
+     * @param noteMap Hash map in which SoundPool places loaded sound files.
+     */
     public void setNoteMap (HashMap<Integer, Integer> noteMap) {
         this.noteMap = noteMap;
     }

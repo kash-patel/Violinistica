@@ -14,13 +14,19 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
+/**
+ * This Activity handles customisation of Violinistica. In particular, it:
+ *     Changes which buttons are visible and take up screen space,
+ *     Sets the device's baseline tilt,
+ *     Changes the app's string tilt range
+ */
 public class CustomiseMode extends Activity {
 
     Button playOpenStringButton, noteButton1, noteButton2, noteButton3,
             noteButton4, noteButton5, noteButton6, noteButton7,
             noteButton8, noteButton9, noteButton10, noteButton11,
             noteButton12, activitySwitchButton, calibrateButton;
-    Button[] buttons;
+    Button[] noteButtons;
     SeekBar stringTiltRangeSlider;
     TextView strMinText, strMaxText, currentStringTiltRangeText;
 
@@ -67,6 +73,11 @@ public class CustomiseMode extends Activity {
         super.onStop();
     }
 
+    /**
+     * This SensorEventListener detects changes in device rotation on the x, y, and z axes.
+     * In particular, it isolates tilt along the device's y axis (the axis that is parallel to
+     * the device's long side) and stores the value in the local variable currentRoll.
+     */
     private SensorEventListener tiltChangeListener = new SensorEventListener() {
 
         @Override
@@ -82,6 +93,13 @@ public class CustomiseMode extends Activity {
 
         }
 
+        /**
+         * Reads data from the device's tilt sensor and stores the value of tilt along the device's
+         * y axis in the local variable currentRoll.
+         *
+         * @param event an event (e.g. movement, rotation, change in magnetic field) detected by
+         *              the device's many sensors.
+         */
         private void updateRoll (SensorEvent event) {
 
             float[] rotationMatrix = new float[9];
@@ -102,6 +120,10 @@ public class CustomiseMode extends Activity {
         }
     };
 
+    /**
+     * This OnClickListener is used to cycle between the View visibilities of the View to which it
+     * is attached, and store the new visibility in the Constants class.
+     */
     private View.OnClickListener visibilityToggleButtonListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -110,51 +132,77 @@ public class CustomiseMode extends Activity {
         }
     };
 
+    /**
+     * Sets float in the Constants class to the device's current tilt.
+     */
     private void calibrate() {
         Constants.setInitialRoll(currentRoll);
     }
 
+    /**
+     * Sets the state of each note button to reflect the visibility stored in the Constants class.
+     */
     private void setButtonVisibilities() {
 
-        for (Button b : buttons) {
+        for (Button button : noteButtons) {
 
-            if (Constants.getButtonVisibility(b.getId()) == View.INVISIBLE) {
-                b.setBackgroundColor(getResources().getColor(R.color.background));
-                b.setTextColor(getResources().getColor(R.color.text));
-                b.setText("Invisible");
-            } else if (Constants.getButtonVisibility(b.getId()) == View.GONE) {
-                b.setBackgroundColor(getResources().getColor(R.color.background));
-                b.setTextColor(getResources().getColor(R.color.textDarker));
-                b.setText("Gone");
+            if (Constants.getButtonVisibility(button.getId()) == View.INVISIBLE) {
+                button.setBackgroundColor(getResources().getColor(R.color.background));
+                button.setTextColor(getResources().getColor(R.color.text));
+                button.setText("Invisible");
+            } else if (Constants.getButtonVisibility(button.getId()) == View.GONE) {
+                button.setBackgroundColor(getResources().getColor(R.color.background));
+                button.setTextColor(getResources().getColor(R.color.textDarker));
+                button.setText("Gone");
             } else {
-                b.setBackgroundColor(getResources().getColor(R.color.backgroundLight));
-                b.setTextColor(getResources().getColor(R.color.text));
-                b.setText("Visible");
+                button.setBackgroundColor(getResources().getColor(R.color.backgroundLight));
+                button.setTextColor(getResources().getColor(R.color.text));
+                button.setText("Visible");
             }
         }
     }
 
+    /**
+     * Sets the string tilt range slider SeekBar's progress to reflect the value stored in the static
+     * instance of Constants.
+     */
     private void setStringTiltRangeSliderProgress() {
         stringTiltRangeSlider.setProgress((int)(100 * (Constants.getStringTiltRange() - Constants.STR_MIN) / (Constants.STR_MAX - Constants.STR_MIN)));
     }
 
+    /**
+     * Calculates string tilt range based on progress and passes the value to the Constants class,
+     * and sets the text in the play mode view to reflect the newly set string tilt range.
+     *
+     * @param progress integer representing the position of the SeekBar
+     */
     private void updateStringTiltRange(int progress) {
         Constants.setStringTiltRange(progress / 100f * (Constants.STR_MAX - Constants.STR_MIN) + Constants.STR_MIN);
         currentStringTiltRangeText.setText((int)(Math.round(Constants.getStringTiltRange())) + " degrees");
     }
 
+    /**
+     * Gets minimum and maximum possible string tilt range values from the Constants class
+     * and sets the corresponding play mode view text to reflect them.
+     */
     private void setStringTiltRangeSliderLimitText() {
         strMinText.setText("" + (int)Constants.STR_MIN);
         strMaxText.setText("" + (int)Constants.STR_MAX);
     }
 
+    /**
+     * Places initialised View variables representing note buttons into an array for easy iteration.
+     */
     private void loadButtonArray() {
-        buttons = new Button[] { playOpenStringButton, noteButton1, noteButton2, noteButton3,
+        noteButtons = new Button[] { playOpenStringButton, noteButton1, noteButton2, noteButton3,
                 noteButton4, noteButton5, noteButton6, noteButton7,
                 noteButton8, noteButton9, noteButton10, noteButton11,
                 noteButton12 };
     }
 
+    /**
+     * Initialises GUI elements.
+     */
     private void loadGUIElements () {
 
         playOpenStringButton = findViewById(R.id.playOpenStringButton);
@@ -179,15 +227,21 @@ public class CustomiseMode extends Activity {
         currentStringTiltRangeText = findViewById(R.id.currentStringTiltRange);
     }
 
+    /**
+     * Attaches touch listeners to interactive GUI elements.
+     */
     private void registerListeners () {
 
-        for (Button b : buttons) {
+        for (Button b : noteButtons) {
             b.setOnClickListener(visibilityToggleButtonListener);
         }
 
         activitySwitchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // We end the CustomiseMode activity and return to the paused PlayMode activity
+                // when the activitySwitchButton is clicked; this ensures that at most one instance
+                // of this activity is running.
                 finish();
             }
         });
@@ -202,6 +256,8 @@ public class CustomiseMode extends Activity {
         stringTiltRangeSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                // progress is determined automatically by the SeekBar based on the position of
+                // the SeekBar thumb.
                 updateStringTiltRange(progress);
             }
 
