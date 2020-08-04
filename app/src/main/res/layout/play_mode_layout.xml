@@ -28,7 +28,7 @@
 
     <Button
         android:id="@+id/activitySwitchButton"
-        android:background="@color/backgroundLight"
+        android:background="@drawable/gear"
         android:textColor="@color/text"
         android:layout_width="50dp"
         android:layout_height="50dp"

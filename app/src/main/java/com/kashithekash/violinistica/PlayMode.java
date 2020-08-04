@@ -115,7 +115,7 @@ public class PlayMode extends Activity {
 //        soundPool = null;
     }
 
-    SensorEventListener tiltChangeListener = new SensorEventListener() {
+    private SensorEventListener tiltChangeListener = new SensorEventListener() {
 
         boolean initialRollSet = false;
 
@@ -190,7 +190,7 @@ public class PlayMode extends Activity {
         }
     };
 
-    OnTouchListener noteButtonListener = new OnTouchListener() {
+    private OnTouchListener noteButtonListener = new OnTouchListener() {
 
         Rect r;
 
@@ -198,33 +198,29 @@ public class PlayMode extends Activity {
         public boolean onTouch(View v, MotionEvent event) {
 
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                v.setBackgroundColor(getResources().getColor(R.color.background));
+                ((Button) v).setTextColor(getResources().getColor(R.color.textDarker));
                 playModeHelper.updateFingerPosition(v);
-                r = new Rect(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
             }
 
-//            if (event.getAction() == MotionEvent.ACTION_MOVE) {
-//                if (!r.contains(v.getLeft() + (int)event.getX(), v.getTop() + (int)event.getY()))
-//                    playModeHelper.updateFingerPosition(null);
-//                else
-//                    playModeHelper.updateFingerPosition(v);
-//            }
-
-            if (event.getAction() == MotionEvent.ACTION_UP)
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                v.setBackgroundColor(getResources().getColor(R.color.backgroundLight));
+                ((Button) v).setTextColor(getResources().getColor(R.color.text));
                 playModeHelper.updateFingerPosition(null);
-            
+            }
             return false;
         }
     };
 
-    int updateNote() {
+    private int updateNote() {
         return playModeHelper.getNote();
     }
 
-    void playNote(int note) {
+    private void playNote(int note) {
         this.streamID = soundPool.play(note, 1, 1, 0, -1, 1);
     }
 
-    void stopNote(int streamID) {
+    private void stopNote(int streamID) {
         if (streamID != -1) soundPool.stop(streamID);
         this.streamID = -1;
     }
@@ -237,15 +233,15 @@ public class PlayMode extends Activity {
         playModeHelper.setStringTiltRange(Constants.getStringTiltRange());
     }
 
-    void updateCurrentViolinString() {
+    private void updateCurrentViolinString() {
         playModeHelper.updateViolinString();
     }
 
-    void updateTiltIndicator() {
+    private void updateTiltIndicator() {
         playModeHelper.updateTiltIndicator(tiltIndicator);
     }
 
-    void updateNoteButtonText() {
+    private void updateNoteButtonText() {
 
         playOpenStringButton.setText(playModeHelper.getNoteString(R.id.playOpenStringButton));
         noteButton1.setText(playModeHelper.getNoteString(R.id.noteButton1));
@@ -263,7 +259,7 @@ public class PlayMode extends Activity {
 
     }
 
-    public void setButtonVisibilities() {
+    private void setButtonVisibilities() {
 
         playOpenStringButton.setVisibility(Constants.getButtonVisibility(R.id.playOpenStringButton));
         noteButton1.setVisibility(Constants.getButtonVisibility(R.id.noteButton1));
@@ -280,7 +276,7 @@ public class PlayMode extends Activity {
         noteButton12.setVisibility(Constants.getButtonVisibility(R.id.noteButton12));
     }
 
-    public void loadGUIElements () {
+    private void loadGUIElements () {
 
         playOpenStringButton = findViewById(R.id.playOpenStringButton);
         noteButton1 = findViewById(R.id.noteButton1);
@@ -299,7 +295,7 @@ public class PlayMode extends Activity {
         tiltIndicator = findViewById(R.id.tiltIndicator);
     }
 
-    void loadNotes() {
+    private void loadNotes() {
 
         noteMap.put(R.raw.g3, soundPool.load(this, R.raw.g3, 0));
         noteMap.put(R.raw.gsharp3, soundPool.load(this, R.raw.gsharp3, 0));
@@ -340,7 +336,7 @@ public class PlayMode extends Activity {
         noteMap.put(R.raw.g6, soundPool.load(this, R.raw.g6, 0));
     }
 
-    void registerListeners () {
+    private void registerListeners () {
         playOpenStringButton.setOnTouchListener(noteButtonListener);
         noteButton1.setOnTouchListener(noteButtonListener);
         noteButton2.setOnTouchListener(noteButtonListener);
