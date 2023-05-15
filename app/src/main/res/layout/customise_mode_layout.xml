@@ -28,34 +28,34 @@
         android:id="@+id/playOpenStringButton"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@color/backgroundLight"
-        android:textColor="@color/text"
-        android:layout_marginRight="10dp"
         android:layout_marginLeft="10dp"
-        android:layout_marginBottom="10dp"
         android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@color/backgroundAlt"
         android:text="Visible"
-        app:layout_constraintWidth_percent="0.4"
+        android:textColor="@color/text"
+        app:layout_constraintBottom_toTopOf="@id/calibrateButton"
         app:layout_constraintHeight_percent="0.8"
         app:layout_constraintLeft_toRightOf="@id/activitySwitchButton"
         app:layout_constraintRight_toLeftOf="@id/noteButtonHolder"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/calibrateButton"/>
+        app:layout_constraintWidth_percent="0.4" />
 
     <Button
         android:id="@+id/calibrateButton"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@color/backgroundLight"
-        android:textColor="@color/text"
-        android:layout_marginRight="10dp"
         android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@color/backgroundAlt"
         android:text="Calibrate"
-        app:layout_constraintWidth_percent="0.4"
+        android:textColor="@color/text"
+        app:layout_constraintBottom_toTopOf="@id/stringTiltRangeSliderView"
         app:layout_constraintLeft_toRightOf="@id/activitySwitchButton"
         app:layout_constraintRight_toLeftOf="@id/noteButtonHolder"
         app:layout_constraintTop_toBottomOf="@id/playOpenStringButton"
-        app:layout_constraintBottom_toTopOf="@id/stringTiltRangeSliderView"/>
+        app:layout_constraintWidth_percent="0.4" />
 
     <LinearLayout
         android:id="@+id/noteButtonHolder"
@@ -70,161 +70,160 @@
 
         <Button
             android:id="@+id/noteButton1"
-            android:background="@color/backgroundLight"
-            android:textColor="@color/text"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:background="@color/backgroundAlt"
             android:text="Visible"
+            android:textColor="@color/text"
+            app:layout_constraintBottom_toTopOf="@id/noteButton2"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/noteButton2"
-            />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/noteButton2"
-            android:background="@color/backgroundLight"
-            android:textColor="@color/text"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:background="@color/backgroundAlt"
             android:text="Visible"
-            app:layout_constraintRight_toRightOf="parent"
+            android:textColor="@color/text"
+            app:layout_constraintBottom_toTopOf="@id/noteButton3"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/noteButton1"
-            app:layout_constraintBottom_toTopOf="@id/noteButton3"/>
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/noteButton1" />
 
         <Button
             android:id="@+id/noteButton3"
-            android:background="@color/backgroundLight"
-            android:textColor="@color/text"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:background="@color/backgroundAlt"
             android:text="Visible"
+            android:textColor="@color/text"
+            app:layout_constraintBottom_toTopOf="@id/noteButton4"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/noteButton2"
-            app:layout_constraintBottom_toTopOf="@id/noteButton4"/>
+            app:layout_constraintTop_toBottomOf="@id/noteButton2" />
 
         <Button
             android:id="@+id/noteButton4"
-            android:background="@color/backgroundLight"
-            android:textColor="@color/text"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:background="@color/backgroundAlt"
             android:text="Visible"
+            android:textColor="@color/text"
+            app:layout_constraintBottom_toTopOf="@id/noteButton5"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/noteButton3"
-            app:layout_constraintBottom_toTopOf="@id/noteButton5"/>
+            app:layout_constraintTop_toBottomOf="@id/noteButton3" />
 
         <Button
             android:id="@+id/noteButton5"
-            android:background="@color/backgroundLight"
-            android:textColor="@color/text"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:background="@color/backgroundAlt"
             android:text="Visible"
+            android:textColor="@color/text"
+            app:layout_constraintBottom_toTopOf="@id/noteButton6"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/noteButton4"
-            app:layout_constraintBottom_toTopOf="@id/noteButton6"/>
+            app:layout_constraintTop_toBottomOf="@id/noteButton4" />
 
         <Button
             android:id="@+id/noteButton6"
-            android:background="@color/backgroundLight"
-            android:textColor="@color/text"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:background="@color/backgroundAlt"
             android:text="Visible"
+            android:textColor="@color/text"
+            app:layout_constraintBottom_toTopOf="@id/noteButton7"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/noteButton5"
-            app:layout_constraintBottom_toTopOf="@id/noteButton7"/>
+            app:layout_constraintTop_toBottomOf="@id/noteButton5" />
 
         <Button
             android:id="@+id/noteButton7"
-            android:background="@color/backgroundLight"
-            android:textColor="@color/text"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:background="@color/backgroundAlt"
             android:text="Visible"
             android:textAllCaps="true"
+            android:textColor="@color/text"
+            app:layout_constraintBottom_toTopOf="@id/noteButton8"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/noteButton6"
-            app:layout_constraintBottom_toTopOf="@id/noteButton8"  />
+            app:layout_constraintTop_toBottomOf="@id/noteButton6" />
 
         <Button
             android:id="@+id/noteButton8"
-            android:background="@color/backgroundLight"
-            android:textColor="@color/text"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:background="@color/backgroundAlt"
             android:text="Visible"
+            android:textColor="@color/text"
+            app:layout_constraintBottom_toTopOf="@id/noteButton9"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/noteButton7"
-            app:layout_constraintBottom_toTopOf="@id/noteButton9"/>
+            app:layout_constraintTop_toBottomOf="@id/noteButton7" />
 
         <Button
             android:id="@+id/noteButton9"
-            android:background="@color/backgroundLight"
-            android:textColor="@color/text"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:background="@color/backgroundAlt"
             android:text="Visible"
+            android:textColor="@color/text"
+            app:layout_constraintBottom_toTopOf="@id/noteButton10"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/noteButton8"
-            app:layout_constraintBottom_toTopOf="@id/noteButton10" />
+            app:layout_constraintTop_toBottomOf="@id/noteButton8" />
 
         <Button
             android:id="@+id/noteButton10"
-            android:background="@color/backgroundLight"
-            android:textColor="@color/text"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:background="@color/backgroundAlt"
             android:text="Visible"
+            android:textColor="@color/text"
+            app:layout_constraintBottom_toTopOf="@id/noteButton11"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/noteButton9"
-            app:layout_constraintBottom_toTopOf="@id/noteButton11" />
+            app:layout_constraintTop_toBottomOf="@id/noteButton9" />
 
         <Button
             android:id="@+id/noteButton11"
-            android:background="@color/backgroundLight"
-            android:textColor="@color/text"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:background="@color/backgroundAlt"
             android:text="Visible"
+            android:textColor="@color/text"
+            app:layout_constraintBottom_toTopOf="@id/noteButton12"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/noteButton10"
-            app:layout_constraintBottom_toTopOf="@id/noteButton12"/>
+            app:layout_constraintTop_toBottomOf="@id/noteButton10" />
 
         <Button
             android:id="@+id/noteButton12"
-            android:background="@color/backgroundLight"
-            android:textColor="@color/text"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:background="@color/backgroundAlt"
             android:text="Visible"
+            android:textColor="@color/text"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/noteButton11"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/noteButton11" />
 
     </LinearLayout>
 
@@ -248,10 +247,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="10dp"
                 android:gravity="center"
-                android:textColor="@color/textDarker"
-                android:textAllCaps="true"
                 android:text="String Tilt Range:"
-                />
+                android:textAllCaps="true"
+                android:textColor="@color/textAlt" />
             <TextView
                 android:id="@+id/currentStringTiltRange"
                 android:layout_width="wrap_content"
@@ -274,8 +272,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:gravity="center"
-                android:textColor="@color/textDarker"
-                android:textAllCaps="true" />
+                android:textAllCaps="true"
+                android:textColor="@color/textAlt" />
 
             <SeekBar
                 android:id="@+id/stringTiltRangeSlider"
@@ -297,8 +295,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="10dp"
                 android:gravity="center"
-                android:textColor="@color/textDarker"
-                android:textAllCaps="true" />
+                android:textAllCaps="true"
+                android:textColor="@color/textAlt" />
 
         </LinearLayout>
     </LinearLayout>

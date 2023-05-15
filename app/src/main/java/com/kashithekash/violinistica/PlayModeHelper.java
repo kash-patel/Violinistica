@@ -30,7 +30,7 @@ public class PlayModeHelper {
     private String[] dStringNotes = {"D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B", "C", "C#"};
     private String[] aStringNotes = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
     private String[] eStringNotes = {"E", "F", "F#", "G", "G#", "A", "A#", "B", "C", "C#", "D", "D#"};
-    private String[] currentStringNotes = null;
+    private String[] currentStringNotes = aStringNotes;
 
     /**
      * Sets local float deltaRoll to the value of the argument newDeltaRoll.

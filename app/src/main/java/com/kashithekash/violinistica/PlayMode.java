@@ -7,6 +7,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
@@ -226,12 +227,12 @@ public class PlayMode extends Activity {
 
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 v.setBackgroundColor(getResources().getColor(R.color.background));
-                ((Button) v).setTextColor(getResources().getColor(R.color.textDarker));
+                ((Button) v).setTextColor(getResources().getColor(R.color.textAlt));
                 playModeHelper.updateFingerPosition(v);
             }
 
             if (event.getAction() == MotionEvent.ACTION_UP) {
-                v.setBackgroundColor(getResources().getColor(R.color.backgroundLight));
+                v.setBackgroundColor(getResources().getColor(R.color.backgroundAlt));
                 ((Button) v).setTextColor(getResources().getColor(R.color.text));
                 playModeHelper.updateFingerPosition(null);
             }

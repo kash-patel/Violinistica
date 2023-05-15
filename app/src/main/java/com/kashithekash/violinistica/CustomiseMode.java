@@ -152,10 +152,10 @@ public class CustomiseMode extends Activity {
                 button.setText("Invisible");
             } else if (Constants.getButtonVisibility(button.getId()) == View.GONE) {
                 button.setBackgroundColor(getResources().getColor(R.color.background));
-                button.setTextColor(getResources().getColor(R.color.textDarker));
+                button.setTextColor(getResources().getColor(R.color.textAlt));
                 button.setText("Gone");
             } else {
-                button.setBackgroundColor(getResources().getColor(R.color.backgroundLight));
+                button.setBackgroundColor(getResources().getColor(R.color.backgroundAlt));
                 button.setTextColor(getResources().getColor(R.color.text));
                 button.setText("Visible");
             }
