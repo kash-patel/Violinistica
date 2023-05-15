@@ -3,6 +3,7 @@ package com.kashithekash.violinistica;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -54,6 +55,9 @@ public class PlayMode extends Activity {
     SeekBar tiltIndicator;
     float initialRoll;
 
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor sharedPreferencesEditor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -83,11 +87,15 @@ public class PlayMode extends Activity {
             }
         });
 
+        sharedPreferences = getApplicationContext().getSharedPreferences(getString(R.string.preference_file_name), Context.MODE_PRIVATE);
+        sharedPreferencesEditor = sharedPreferences.edit();
+
         loadGUIElements();
         loadButtonArray();
         loadNotes();        // SoundPool requires sound files to be loaded before they can be played
         registerListeners();
-        setButtonVisibilities();
+
+        loadButtonVisibilities();
     }
 
     @Override
@@ -100,7 +108,7 @@ public class PlayMode extends Activity {
         super.onResume();
 
         // This happens after we return from the CustomiseMode ability
-        setButtonVisibilities();
+        loadButtonVisibilities();
         setStringTiltRange();
         setInitialRoll();
     }
@@ -226,13 +234,13 @@ public class PlayMode extends Activity {
         public boolean onTouch(View v, MotionEvent event) {
 
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                v.setBackgroundColor(getResources().getColor(R.color.background));
-                ((Button) v).setTextColor(getResources().getColor(R.color.textAlt));
+                v.setBackgroundColor(getResources().getColor(R.color.buttonActive));
+                ((Button) v).setTextColor(getResources().getColor(R.color.textActive));
                 playModeHelper.updateFingerPosition(v);
             }
 
             if (event.getAction() == MotionEvent.ACTION_UP) {
-                v.setBackgroundColor(getResources().getColor(R.color.backgroundAlt));
+                v.setBackgroundColor(getResources().getColor(R.color.button));
                 ((Button) v).setTextColor(getResources().getColor(R.color.text));
                 playModeHelper.updateFingerPosition(null);
             }
@@ -302,6 +310,16 @@ public class PlayMode extends Activity {
 
         for (Button button : noteButtons) {
             button.setText(playModeHelper.getNoteString(button.getId()));
+        }
+    }
+
+    /**
+     * Loads the visibility of each note button to the values in SharedPreferences.
+     */
+    private void loadButtonVisibilities() {
+
+        for (Button button : noteButtons) {
+            button.setVisibility(sharedPreferences.getInt(button.getId() + "_visibility", 0));
         }
     }
 
@@ -414,7 +432,7 @@ public class PlayMode extends Activity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 // This is necessary because without it, the user would be able to change the tilt
-                // indicator SeekBar's progress interactively. We want to do it prorammatically.
+                // indicator SeekBar's progress interactively. We want to do it programmatically.
                 // Returning true redirects the touch input and so the SeekBar is unaffected by it.
                 return true;
             }

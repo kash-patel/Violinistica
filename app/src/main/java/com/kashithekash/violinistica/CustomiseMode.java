@@ -2,6 +2,7 @@ package com.kashithekash.violinistica;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -22,18 +23,21 @@ import androidx.annotation.Nullable;
  */
 public class CustomiseMode extends Activity {
 
-    Button playOpenStringButton, noteButton1, noteButton2, noteButton3,
+    private Button playOpenStringButton, noteButton1, noteButton2, noteButton3,
             noteButton4, noteButton5, noteButton6, noteButton7,
             noteButton8, noteButton9, noteButton10, noteButton11,
             noteButton12, activitySwitchButton, calibrateButton;
-    Button[] noteButtons;
-    SeekBar stringTiltRangeSlider;
-    TextView strMinText, strMaxText, currentStringTiltRangeText;
+    private Button[] noteButtons;
+    private SeekBar stringTiltRangeSlider;
+    private TextView strMinText, strMaxText, currentStringTiltRangeText;
 
-    SensorManager sensorManager;
-    Sensor rvSensor;
+    private SensorManager sensorManager;
+    private Sensor rvSensor;
 
-    float currentRoll;
+    private float currentRoll;
+
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor sharedPreferencesEditor;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,21 +49,23 @@ public class CustomiseMode extends Activity {
         rvSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
         sensorManager.registerListener(tiltChangeListener, rvSensor, SensorManager.SENSOR_DELAY_GAME);
 
+        sharedPreferences = getApplicationContext().getSharedPreferences(getString(R.string.preference_file_name), Context.MODE_PRIVATE);
+        sharedPreferencesEditor = sharedPreferences.edit();
+
         loadGUIElements();
         loadButtonArray();
         registerListeners();
         setStringTiltRangeSliderProgress();
         setStringTiltRangeSliderLimitText();
-        setButtonVisibilities();
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-    }
+    protected void onStart() { super.onStart(); }
 
     @Override
     protected void onResume() {
+
+        loadButtonVisibilities();
         super.onResume();
     }
 
@@ -69,9 +75,7 @@ public class CustomiseMode extends Activity {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-    }
+    protected void onStop() { super.onStop(); }
 
     /**
      * This SensorEventListener detects changes in device rotation on the x, y, and z axes.
@@ -125,10 +129,34 @@ public class CustomiseMode extends Activity {
      * is attached, and store the new visibility in the Constants class.
      */
     private View.OnClickListener visibilityToggleButtonListener = new View.OnClickListener() {
-        @Override
+
         public void onClick(View v) {
-            Constants.toggleButtonVisibility(v.getId());
-            setButtonVisibilities();
+
+            switch (sharedPreferences.getInt(v.getId() + "_visibility", 0)) {
+
+                case View.VISIBLE:
+                    ((Button) v).setBackgroundColor(getResources().getColor(R.color.background));
+                    ((Button) v).setTextColor(getResources().getColor(R.color.text));
+                    ((Button) v).setText("Invisible");
+                    sharedPreferencesEditor.putInt(v.getId() + "_visibility", View.INVISIBLE);
+                    break;
+                case View.INVISIBLE:
+                    ((Button) v).setBackgroundColor(getResources().getColor(R.color.background));
+                    ((Button) v).setTextColor(getResources().getColor(R.color.textAlt));
+                    ((Button) v).setText("Gone");
+                    sharedPreferencesEditor.putInt(v.getId() + "_visibility", View.GONE);
+                    break;
+                case View.GONE:
+                    ((Button) v).setBackgroundColor(getResources().getColor(R.color.backgroundAlt));
+                    ((Button) v).setTextColor(getResources().getColor(R.color.text));
+                    ((Button) v).setText("Visible");
+                    sharedPreferencesEditor.putInt(v.getId() + "_visibility", View.VISIBLE);
+                    break;
+                default:
+                    break;
+            }
+
+            sharedPreferencesEditor.apply();
         }
     };
 
@@ -137,6 +165,36 @@ public class CustomiseMode extends Activity {
      */
     private void calibrate() {
         Constants.setInitialRoll(currentRoll);
+    }
+
+    /**
+     * Loads the state of each note button from SharedPreferences.
+     */
+    private void loadButtonVisibilities() {
+
+        for (Button button : noteButtons) {
+
+            switch (sharedPreferences.getInt(button.getId() + "_visibility", 0)) {
+                case 0:
+                    button.setBackgroundColor(getResources().getColor(R.color.backgroundAlt));
+                    button.setTextColor(getResources().getColor(R.color.text));
+                    button.setText("Visible");
+                    break;
+                case 4:
+                    button.setBackgroundColor(getResources().getColor(R.color.background));
+                    button.setTextColor(getResources().getColor(R.color.text));
+                    button.setText("Invisible");
+                    break;
+                case 8:
+                    button.setBackgroundColor(getResources().getColor(R.color.background));
+                    button.setTextColor(getResources().getColor(R.color.textAlt));
+                    button.setText("Gone");
+                    break;
+                default:
+                    System.out.println("Something inexplicable has happened. See CustomiseMode.java, void loadButtonVisibilities().");
+                    break;
+            }
+        }
     }
 
     /**
@@ -150,14 +208,20 @@ public class CustomiseMode extends Activity {
                 button.setBackgroundColor(getResources().getColor(R.color.background));
                 button.setTextColor(getResources().getColor(R.color.text));
                 button.setText("Invisible");
+                sharedPreferencesEditor.putInt(button.getId() + "_visibility", View.INVISIBLE);
+                sharedPreferencesEditor.apply();
             } else if (Constants.getButtonVisibility(button.getId()) == View.GONE) {
                 button.setBackgroundColor(getResources().getColor(R.color.background));
                 button.setTextColor(getResources().getColor(R.color.textAlt));
                 button.setText("Gone");
+                sharedPreferencesEditor.putInt(button.getId() + "_visibility", View.GONE);
+                sharedPreferencesEditor.apply();
             } else {
                 button.setBackgroundColor(getResources().getColor(R.color.backgroundAlt));
                 button.setTextColor(getResources().getColor(R.color.text));
                 button.setText("Visible");
+                sharedPreferencesEditor.putInt(button.getId() + "_visibility", View.VISIBLE);
+                sharedPreferencesEditor.apply();
             }
         }
     }

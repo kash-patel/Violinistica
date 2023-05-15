@@ -16,6 +16,9 @@
 
     <color name="text">#202020</color>
     <color name="textAlt">#404040</color>
+    <color name="textActive">#F0A020</color>
+    <color name="button">#E0E0E0</color>
+    <color name="buttonActive">#202020</color>
     <color name="background">#F2F2F2</color>
     <color name="backgroundAlt">#E0E0E0</color>
     <color name="progressTint">#F0A020</color>

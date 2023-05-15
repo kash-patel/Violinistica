@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Violinistica</string>
+    <string name="preference_file_name">com.kashithekash.violinistica.prefs</string>
 </resources>
