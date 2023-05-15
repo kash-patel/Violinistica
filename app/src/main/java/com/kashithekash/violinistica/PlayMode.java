@@ -241,7 +241,7 @@ public class PlayMode extends Activity {
 
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 v.setBackgroundColor(getResources().getColor(R.color.button));
-                ((Button) v).setTextColor(getResources().getColor(R.color.text));
+                ((Button) v).setTextColor(getResources().getColor(R.color.textButton));
                 playModeHelper.updateFingerPosition(null);
             }
             return false;

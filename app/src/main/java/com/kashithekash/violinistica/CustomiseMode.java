@@ -152,8 +152,8 @@ public class CustomiseMode extends Activity {
                     sharedPreferencesEditor.apply();
                     break;
                 case View.GONE:
-                    ((Button) v).setBackgroundColor(getResources().getColor(R.color.backgroundAlt));
-                    ((Button) v).setTextColor(getResources().getColor(R.color.text));
+                    ((Button) v).setBackgroundColor(getResources().getColor(R.color.button));
+                    ((Button) v).setTextColor(getResources().getColor(R.color.textButton));
                     ((Button) v).setText("Visible");
                     sharedPreferencesEditor.putInt(v.getId() + "_visibility", View.VISIBLE);
                     sharedPreferencesEditor.apply();
@@ -180,8 +180,8 @@ public class CustomiseMode extends Activity {
 
             switch (sharedPreferences.getInt(button.getId() + "_visibility", 0)) {
                 case 0:
-                    button.setBackgroundColor(getResources().getColor(R.color.backgroundAlt));
-                    button.setTextColor(getResources().getColor(R.color.text));
+                    button.setBackgroundColor(getResources().getColor(R.color.button));
+                    button.setTextColor(getResources().getColor(R.color.textButton));
                     button.setText("Visible");
                     break;
                 case 4:
@@ -197,35 +197,6 @@ public class CustomiseMode extends Activity {
                 default:
                     System.out.println("Something inexplicable has happened. See CustomiseMode.java, void loadButtonVisibilities().");
                     break;
-            }
-        }
-    }
-
-    /**
-     * Sets the state of each note button to reflect the visibility stored in the Constants class.
-     */
-    private void setButtonVisibilities() {
-
-        for (Button button : noteButtons) {
-
-            if (Constants.getButtonVisibility(button.getId()) == View.INVISIBLE) {
-                button.setBackgroundColor(getResources().getColor(R.color.background));
-                button.setTextColor(getResources().getColor(R.color.text));
-                button.setText("Invisible");
-                sharedPreferencesEditor.putInt(button.getId() + "_visibility", View.INVISIBLE);
-                sharedPreferencesEditor.apply();
-            } else if (Constants.getButtonVisibility(button.getId()) == View.GONE) {
-                button.setBackgroundColor(getResources().getColor(R.color.background));
-                button.setTextColor(getResources().getColor(R.color.textAlt));
-                button.setText("Gone");
-                sharedPreferencesEditor.putInt(button.getId() + "_visibility", View.GONE);
-                sharedPreferencesEditor.apply();
-            } else {
-                button.setBackgroundColor(getResources().getColor(R.color.backgroundAlt));
-                button.setTextColor(getResources().getColor(R.color.text));
-                button.setText("Visible");
-                sharedPreferencesEditor.putInt(button.getId() + "_visibility", View.VISIBLE);
-                sharedPreferencesEditor.apply();
             }
         }
     }
