@@ -20,6 +20,10 @@ android {
         }
     }
     namespace 'com.kashithekash.violinistica'
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_9
+        targetCompatibility JavaVersion.VERSION_1_9
+    }
 
 }
 

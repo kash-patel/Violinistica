@@ -109,7 +109,7 @@ public class PlayMode extends Activity {
 
         // This happens after we return from the CustomiseMode ability
         loadButtonVisibilities();
-        setStringTiltRange();
+        loadStringTiltRange();
         setInitialRoll();
     }
 
@@ -279,6 +279,17 @@ public class PlayMode extends Activity {
      */
     private void setInitialRoll() {
         initialRoll = Constants.getInitialRoll();
+    }
+
+    /**
+     * Loads the value of string tilt range to the value stored in SharedPreferences.
+     */
+    private void loadStringTiltRange() {
+
+        float stringTiltRange = sharedPreferences.getFloat("tilt_range", 30f);
+
+        playModeHelper.setStringTiltRange(stringTiltRange);
+        Constants.setStringTiltRange(stringTiltRange);
     }
 
     /**

@@ -55,8 +55,8 @@ public class CustomiseMode extends Activity {
         loadGUIElements();
         loadButtonArray();
         registerListeners();
-        setStringTiltRangeSliderProgress();
-        setStringTiltRangeSliderLimitText();
+        loadStringTiltRangeSliderProgress();
+        loadStringTiltRangeSliderLimitText();
     }
 
     @Override
@@ -71,7 +71,10 @@ public class CustomiseMode extends Activity {
 
     @Override
     protected void onPause() {
+
         super.onPause();
+        sharedPreferencesEditor.putFloat("tilt_range", Constants.getStringTiltRange());
+        sharedPreferencesEditor.apply();
     }
 
     @Override
@@ -139,24 +142,25 @@ public class CustomiseMode extends Activity {
                     ((Button) v).setTextColor(getResources().getColor(R.color.text));
                     ((Button) v).setText("Invisible");
                     sharedPreferencesEditor.putInt(v.getId() + "_visibility", View.INVISIBLE);
+                    sharedPreferencesEditor.apply();
                     break;
                 case View.INVISIBLE:
                     ((Button) v).setBackgroundColor(getResources().getColor(R.color.background));
                     ((Button) v).setTextColor(getResources().getColor(R.color.textAlt));
                     ((Button) v).setText("Gone");
                     sharedPreferencesEditor.putInt(v.getId() + "_visibility", View.GONE);
+                    sharedPreferencesEditor.apply();
                     break;
                 case View.GONE:
                     ((Button) v).setBackgroundColor(getResources().getColor(R.color.backgroundAlt));
                     ((Button) v).setTextColor(getResources().getColor(R.color.text));
                     ((Button) v).setText("Visible");
                     sharedPreferencesEditor.putInt(v.getId() + "_visibility", View.VISIBLE);
+                    sharedPreferencesEditor.apply();
                     break;
                 default:
                     break;
             }
-
-            sharedPreferencesEditor.apply();
         }
     };
 
@@ -227,10 +231,10 @@ public class CustomiseMode extends Activity {
     }
 
     /**
-     * Sets the string tilt range slider SeekBar's progress to reflect the value stored in the static
-     * instance of Constants.
+     * Sets the string tilt range slider SeekBar's progress to reflect the value stored in
+     * the local instance of Constants.
      */
-    private void setStringTiltRangeSliderProgress() {
+    private void loadStringTiltRangeSliderProgress() {
         stringTiltRangeSlider.setProgress((int)(100 * (Constants.getStringTiltRange() - Constants.STR_MIN) / (Constants.STR_MAX - Constants.STR_MIN)));
     }
 
@@ -249,7 +253,7 @@ public class CustomiseMode extends Activity {
      * Gets minimum and maximum possible string tilt range values from the Constants class
      * and sets the corresponding play mode view text to reflect them.
      */
-    private void setStringTiltRangeSliderLimitText() {
+    private void loadStringTiltRangeSliderLimitText() {
         strMinText.setText("" + (int)Constants.STR_MIN);
         strMaxText.setText("" + (int)Constants.STR_MAX);
     }
