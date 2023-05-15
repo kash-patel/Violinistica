@@ -33,8 +33,24 @@ public class PlayModeHelper {
     private String[] dStringNotes = {"D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B", "C", "C#"};
     private String[] aStringNotes = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
     private String[] eStringNotes = {"E", "F", "F#", "G", "G#", "A", "A#", "B", "C", "C#", "D", "D#"};
+
     private String[] currentStringNotes = aStringNotes;
-    private String[] oldStringNotes = aStringNotes;
+
+    private int[] buttonIDs = {
+            R.id.playOpenStringButton,
+            R.id.noteButton1,
+            R.id.noteButton2,
+            R.id.noteButton3,
+            R.id.noteButton4,
+            R.id.noteButton5,
+            R.id.noteButton6,
+            R.id.noteButton7,
+            R.id.noteButton8,
+            R.id.noteButton9,
+            R.id.noteButton10,
+            R.id.noteButton11,
+            R.id.noteButton12
+    };
 
     /**
      * Sets local float deltaRoll to the value of the argument newDeltaRoll.
@@ -52,9 +68,6 @@ public class PlayModeHelper {
      * be.
      */
     public void updateViolinString() {
-
-        oldViolinString = currentViolinString;
-        oldStringNotes = currentStringNotes;
 
         if (deltaRoll <= -stringTiltRange && currentViolinString != ViolinString.E) {
             currentViolinString = ViolinString.E;
@@ -121,15 +134,15 @@ public class PlayModeHelper {
      *     note: int; represents the ID of the sound file of the corresponding note.
      * @return note
      */
-    public int getNote() {
+    public int getNote(int buttonID) {
 
         int note = -1;
 
-        if (currentFingerPosition == null) return note;
+//        if (currentFingerPosition == null) return note;
 
         switch (currentViolinString) {
             case G:
-                switch (currentFingerPosition.getId()) {
+                switch (buttonID) {
                     case R.id.playOpenStringButton:
                         note = noteMap.get(R.raw.g3);
                         break;
@@ -174,7 +187,7 @@ public class PlayModeHelper {
                         break;
                 } break;
             case D:
-                switch (currentFingerPosition.getId()) {
+                switch (buttonID) {
                     case R.id.playOpenStringButton:
                         note = noteMap.get(R.raw.d4);
                         break;
@@ -219,7 +232,7 @@ public class PlayModeHelper {
                         break;
                 } break;
             case A:
-                switch (currentFingerPosition.getId()) {
+                switch (buttonID) {
                     case R.id.playOpenStringButton:
                         note = noteMap.get(R.raw.a4);
                         break;
@@ -264,7 +277,7 @@ public class PlayModeHelper {
                         break;
                 } break;
             case E:
-                switch (currentFingerPosition.getId()) {
+                switch (buttonID) {
                     case R.id.playOpenStringButton:
                         note = noteMap.get(R.raw.e5);
                         break;
@@ -316,6 +329,49 @@ public class PlayModeHelper {
     }
 
     /**
+     * Returns an integer representing the 'number' of the button;
+     * e.g. playOpenStringButton -> 0, noteButton4 -> 4, etc.
+     * @param b: ID of the button
+     * @return an integer corresponding to the button's 'number'
+     */
+    public int getButtonNum(int b) {
+        switch (b) {
+            case R.id.playOpenStringButton:
+                return 0;
+            case R.id.noteButton1:
+                return 1;
+            case R.id.noteButton2:
+                return 2;
+            case R.id.noteButton3:
+                return 3;
+            case R.id.noteButton4:
+                return 4;
+            case R.id.noteButton5:
+                return 5;
+            case R.id.noteButton6:
+                return 6;
+            case R.id.noteButton7:
+                return 7;
+            case R.id.noteButton8:
+                return 8;
+            case R.id.noteButton9:
+                return 9;
+            case R.id.noteButton10:
+                return 10;
+            case R.id.noteButton11:
+                return 11;
+            case R.id.noteButton12:
+                return 12;
+            default:
+                return -1;
+        }
+    }
+
+    public int getButtonID (int num) {
+        return buttonIDs[num];
+    }
+
+    /**
      * Returns value of local ViolinString currentViolinString
      * @return currentViolinString
      */
@@ -361,6 +417,21 @@ public class PlayModeHelper {
             default:
                 return "";
         }
+    }
+
+    /**
+     * Returns highest index with non-zero value.
+     * @param arr
+     * @return
+     */
+    public int intArrayMaxIndex (int[] arr) {
+
+        int maxIndex = -1;
+
+        for (int i = 0; i < arr.length; i++)
+            if (arr[i] > 0) maxIndex = i;
+
+        return maxIndex;
     }
 
     /**

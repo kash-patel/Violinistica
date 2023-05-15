@@ -8,7 +8,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
@@ -41,8 +40,22 @@ public class PlayMode extends Activity {
     SoundPool soundPool;
     boolean isLoaded = false;   // Whether the SoundPool instance has loaded
 
-    // List of active stream IDs
-    List<Integer> activeStreamIDs = new ArrayList<Integer>();
+    // Array containing active streamID of the audio file playing for each of the thirteen note buttons;
+    // -1 means no stream playing
+    int buttonStreamIDs[] = new int[13];
+
+    // Array representing state of each of the thirteen note buttons
+    // 0 = not pressed, 1 = pressed
+    int noteButtonStates[] = new int[13];
+
+    // Values from 0 to 12; -1 indicates no button pressed.
+    int highestActiveButton = -1;
+
+    // Priority of currently held button; -1 means none pressed
+    private int currentButtonPriority = -1;
+
+    // Priority of previously held button; -1 means none pressed
+    private int previousButtonPriority = -1;
 
     AudioManager audioManager;
 
@@ -55,12 +68,12 @@ public class PlayMode extends Activity {
             noteButton12, activitySwitchButton;
     Button[] noteButtons;
 
-    Button currentButton = null;
     SeekBar tiltIndicator;
     float initialRoll;
     float currentVolume = 0;
     static final int MAX_VOLUME = 1;
-    static final int TRANSITION_TIME_MS = 100;
+    static final int FADE_IN_TIME_MS = 50;
+    static final int FADE_OUT_TIME_MS = 100;
 
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor sharedPreferencesEditor;
@@ -183,15 +196,10 @@ public class PlayMode extends Activity {
                 currString = playModeHelper.getCurrentViolinString();
                 updateNoteButtonText();
 
-                noteToPlay = updateNote();
-
-//                if (noteToPlay != notePlaying) {
-
-                    stopNote();
-                    if (currentButton != null) playNote(noteToPlay);
-
-                    notePlaying = noteToPlay;
-//                }
+                if (highestActiveButton > -1) {
+                    stopNote(playModeHelper.getButtonID(highestActiveButton));
+                    playNote(playModeHelper.getButtonID(highestActiveButton));
+                }
             }
 
             updateTiltIndicator();
@@ -246,51 +254,61 @@ public class PlayMode extends Activity {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
 
+            int buttonNum = playModeHelper.getButtonNum(v.getId());
+
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                currentButton = (Button) v;
+
+                noteButtonStates[buttonNum] = 1;
+
+                if (buttonNum > highestActiveButton) {
+                    if (highestActiveButton > -1)
+                        stopNote(playModeHelper.getButtonID(highestActiveButton));
+                    highestActiveButton = buttonNum;
+                    playNote(playModeHelper.getButtonID(buttonNum));
+                }
+
                 v.setBackgroundColor(getResources().getColor(R.color.buttonActive));
                 ((Button) v).setTextColor(getResources().getColor(R.color.textActive));
-                playModeHelper.updateFingerPosition(v);
-                playNote(playModeHelper.getNote());
             }
 
             if (event.getAction() == MotionEvent.ACTION_UP) {
-                currentButton = null;
+
+                noteButtonStates[buttonNum] = 0;
+
+                if (buttonNum == highestActiveButton) {
+                    if (buttonNum > -1)
+                        stopNote(playModeHelper.getButtonID(buttonNum));
+                    highestActiveButton = playModeHelper.intArrayMaxIndex(noteButtonStates);
+                    if (highestActiveButton > -1)
+                        playNote(playModeHelper.getButtonID(highestActiveButton));
+                }
+
                 v.setBackgroundColor(getResources().getColor(R.color.button));
                 ((Button) v).setTextColor(getResources().getColor(R.color.textButton));
-                playModeHelper.updateFingerPosition(null);
-                stopNote();
             }
+
             return false;
         }
     };
 
     /**
-     * @return note sound file ID from the HashMap in the local instance of PlayModeHelper.
-     */
-    private int updateNote() {
-        return playModeHelper.getNote();
-    }
-
-    /**
      * Sets the local int streamID to the value returned when SoundPool plays the sound file
      * whose resource ID is the value of the argument note.
-     * @param note int ID of the note sound file.
+     * @param buttonID
      */
-    private void playNote(int note) {
+    private void playNote(int buttonID) {
+        int note = playModeHelper.getNote(buttonID);
         int streamID = soundPool.play(note, currentVolume, currentVolume, 0, -1, 1);
-        activeStreamIDs.add(streamID);
+        buttonStreamIDs[playModeHelper.getButtonNum(buttonID)] = streamID;
         fadeInSound(streamID);
     }
 
     /**
      * Stops the sound whose stream ID is argument streamID and sets local int streamID to -1.
      */
-    private void stopNote() {
-
-        for (int sid : activeStreamIDs) {
-            fadeOutSound(sid);
-        }
+    private void stopNote(int buttonID) {
+        fadeOutSound(buttonStreamIDs[playModeHelper.getButtonNum(buttonID)]);
+        buttonStreamIDs[playModeHelper.getButtonNum(buttonID)] = -1;
     }
 
     private void fadeInSound (int streamID) {
@@ -299,9 +317,9 @@ public class PlayMode extends Activity {
             @Override
             public void run() {
 
-                while (currentButton != null && currentVolume <= MAX_VOLUME) {
+                while (highestActiveButton > -1 && currentVolume <= MAX_VOLUME) {
 
-                    currentVolume += (MAX_VOLUME / (TRANSITION_TIME_MS / 10.0f));
+                    currentVolume += (MAX_VOLUME / (FADE_IN_TIME_MS / 10.0f));
 
                     try {
                         Thread.sleep(10);
@@ -323,7 +341,7 @@ public class PlayMode extends Activity {
 
                 while (currentVolume > 0) {
 
-                    currentVolume -= (MAX_VOLUME / (TRANSITION_TIME_MS / 10.0f));
+                    currentVolume -= (MAX_VOLUME / (FADE_OUT_TIME_MS / 10.0f));
 
                     try {
                         Thread.sleep(10);
