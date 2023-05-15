@@ -22,7 +22,10 @@ public class PlayModeHelper {
     private HashMap<Integer, Integer> noteMap;
 
     private ViolinString currentViolinString = ViolinString.A;
-    private View fingerPosition = null;
+    private ViolinString oldViolinString = ViolinString.A;
+
+    private View currentFingerPosition = null;
+    private View oldFingerPosition = null;
 
     private float stringTiltRange = 30f;
 
@@ -31,6 +34,7 @@ public class PlayModeHelper {
     private String[] aStringNotes = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
     private String[] eStringNotes = {"E", "F", "F#", "G", "G#", "A", "A#", "B", "C", "C#", "D", "D#"};
     private String[] currentStringNotes = aStringNotes;
+    private String[] oldStringNotes = aStringNotes;
 
     /**
      * Sets local float deltaRoll to the value of the argument newDeltaRoll.
@@ -48,6 +52,9 @@ public class PlayModeHelper {
      * be.
      */
     public void updateViolinString() {
+
+        oldViolinString = currentViolinString;
+        oldStringNotes = currentStringNotes;
 
         if (deltaRoll <= -stringTiltRange && currentViolinString != ViolinString.E) {
             currentViolinString = ViolinString.E;
@@ -81,7 +88,8 @@ public class PlayModeHelper {
      * @param currentlyTouchedButton
      */
     public void updateFingerPosition(View currentlyTouchedButton) {
-        fingerPosition = currentlyTouchedButton;
+        oldFingerPosition = currentFingerPosition;
+        currentFingerPosition = currentlyTouchedButton;
     }
 
     /**
@@ -117,11 +125,11 @@ public class PlayModeHelper {
 
         int note = -1;
 
-        if (fingerPosition == null) return note;
+        if (currentFingerPosition == null) return note;
 
         switch (currentViolinString) {
             case G:
-                switch (fingerPosition.getId()) {
+                switch (currentFingerPosition.getId()) {
                     case R.id.playOpenStringButton:
                         note = noteMap.get(R.raw.g3);
                         break;
@@ -166,7 +174,7 @@ public class PlayModeHelper {
                         break;
                 } break;
             case D:
-                switch (fingerPosition.getId()) {
+                switch (currentFingerPosition.getId()) {
                     case R.id.playOpenStringButton:
                         note = noteMap.get(R.raw.d4);
                         break;
@@ -211,7 +219,7 @@ public class PlayModeHelper {
                         break;
                 } break;
             case A:
-                switch (fingerPosition.getId()) {
+                switch (currentFingerPosition.getId()) {
                     case R.id.playOpenStringButton:
                         note = noteMap.get(R.raw.a4);
                         break;
@@ -256,7 +264,7 @@ public class PlayModeHelper {
                         break;
                 } break;
             case E:
-                switch (fingerPosition.getId()) {
+                switch (currentFingerPosition.getId()) {
                     case R.id.playOpenStringButton:
                         note = noteMap.get(R.raw.e5);
                         break;

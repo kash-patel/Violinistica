@@ -21,7 +21,9 @@ import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.SeekBar;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * The PlayMode Activity is the app's default activity, and is where the user will spend most of
@@ -39,8 +41,8 @@ public class PlayMode extends Activity {
     SoundPool soundPool;
     boolean isLoaded = false;   // Whether the SoundPool instance has loaded
 
-    // Stream id of current soundpool audio
-    int streamID = -1;
+    // List of active stream IDs
+    List<Integer> activeStreamIDs = new ArrayList<Integer>();
 
     AudioManager audioManager;
 
@@ -52,8 +54,13 @@ public class PlayMode extends Activity {
             noteButton8, noteButton9, noteButton10, noteButton11,
             noteButton12, activitySwitchButton;
     Button[] noteButtons;
+
+    Button currentButton = null;
     SeekBar tiltIndicator;
     float initialRoll;
+    float currentVolume = 0;
+    static final int MAX_VOLUME = 1;
+    static final int TRANSITION_TIME_MS = 100;
 
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor sharedPreferencesEditor;
@@ -74,12 +81,12 @@ public class PlayMode extends Activity {
         rvSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
         sensorManager.registerListener(tiltChangeListener, rvSensor, SensorManager.SENSOR_DELAY_GAME);
 
-         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
-        soundPool = new SoundPool(1, AudioManager.USE_DEFAULT_STREAM_TYPE, AudioManager.ADJUST_SAME);
+        soundPool = new SoundPool(2, AudioManager.USE_DEFAULT_STREAM_TYPE, AudioManager.ADJUST_SAME);
         soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
             @Override
             public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
@@ -121,6 +128,12 @@ public class PlayMode extends Activity {
     @Override
     protected void onStop() {
         super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        soundPool.release();
     }
 
     /**
@@ -169,19 +182,19 @@ public class PlayMode extends Activity {
                 prevString = currString;
                 currString = playModeHelper.getCurrentViolinString();
                 updateNoteButtonText();
+
+                noteToPlay = updateNote();
+
+//                if (noteToPlay != notePlaying) {
+
+                    stopNote();
+                    if (currentButton != null) playNote(noteToPlay);
+
+                    notePlaying = noteToPlay;
+//                }
             }
 
             updateTiltIndicator();
-
-            noteToPlay = updateNote();
-
-            if (noteToPlay != notePlaying) {
-
-                stopNote(streamID);
-                playNote(noteToPlay);
-
-                notePlaying = noteToPlay;
-            }
         }
 
         @Override
@@ -234,15 +247,19 @@ public class PlayMode extends Activity {
         public boolean onTouch(View v, MotionEvent event) {
 
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                currentButton = (Button) v;
                 v.setBackgroundColor(getResources().getColor(R.color.buttonActive));
                 ((Button) v).setTextColor(getResources().getColor(R.color.textActive));
                 playModeHelper.updateFingerPosition(v);
+                playNote(playModeHelper.getNote());
             }
 
             if (event.getAction() == MotionEvent.ACTION_UP) {
+                currentButton = null;
                 v.setBackgroundColor(getResources().getColor(R.color.button));
                 ((Button) v).setTextColor(getResources().getColor(R.color.textButton));
                 playModeHelper.updateFingerPosition(null);
+                stopNote();
             }
             return false;
         }
@@ -261,17 +278,66 @@ public class PlayMode extends Activity {
      * @param note int ID of the note sound file.
      */
     private void playNote(int note) {
-        streamID = soundPool.play(note, 1, 1, 0, -1, 1);
+        int streamID = soundPool.play(note, currentVolume, currentVolume, 0, -1, 1);
+        activeStreamIDs.add(streamID);
+        fadeInSound(streamID);
     }
 
     /**
      * Stops the sound whose stream ID is argument streamID and sets local int streamID to -1.
-     *
-     * @param streamID int ID of the currently playing note.
      */
-    private void stopNote(int streamID) {
-        if (streamID != -1) soundPool.stop(streamID);
-        this.streamID = -1;
+    private void stopNote() {
+
+        for (int sid : activeStreamIDs) {
+            fadeOutSound(sid);
+        }
+    }
+
+    private void fadeInSound (int streamID) {
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                while (currentButton != null && currentVolume <= MAX_VOLUME) {
+
+                    currentVolume += (MAX_VOLUME / (TRANSITION_TIME_MS / 10.0f));
+
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    soundPool.setVolume(streamID, currentVolume, currentVolume);
+                }
+            }
+        }).start();
+    }
+
+    private void fadeOutSound (int streamID) {
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                while (currentVolume > 0) {
+
+                    currentVolume -= (MAX_VOLUME / (TRANSITION_TIME_MS / 10.0f));
+
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    soundPool.setVolume(streamID, currentVolume, currentVolume);
+                }
+
+                soundPool.stop(streamID);
+                currentVolume = 0.0f;
+            }
+        }).start();
     }
 
     /**
@@ -290,14 +356,6 @@ public class PlayMode extends Activity {
 
         playModeHelper.setStringTiltRange(stringTiltRange);
         Constants.setStringTiltRange(stringTiltRange);
-    }
-
-    /**
-     * Tells local instance of PlayModeHelper to set the value of string tilt range to the value
-     * provided by the Constants class.
-     */
-    private void setStringTiltRange() {
-        playModeHelper.setStringTiltRange(Constants.getStringTiltRange());
     }
 
     /**
@@ -331,16 +389,6 @@ public class PlayMode extends Activity {
 
         for (Button button : noteButtons) {
             button.setVisibility(sharedPreferences.getInt(button.getId() + "_visibility", 0));
-        }
-    }
-
-    /**
-     * Sets the visibility of each note button to the values provided by the Constants class.
-     */
-    private void setButtonVisibilities() {
-
-        for (Button button : noteButtons) {
-            button.setVisibility(Constants.getButtonVisibility(button.getId()));
         }
     }
 
