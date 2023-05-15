@@ -13,23 +13,21 @@
 
     <Button
         android:id="@+id/activitySwitchButton"
-        android:background="@drawable/note"
-        android:textColor="@color/text"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginLeft="10dp"
+        android:background="@drawable/noun_note"
+        android:textColor="@color/text"
+        app:layout_constraintBottom_toTopOf="@id/stringTiltRangeSliderView"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@id/playOpenStringButton"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/stringTiltRangeSliderView"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/playOpenStringButton"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginBottom="10dp"
         android:background="@color/button"
