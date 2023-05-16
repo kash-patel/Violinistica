@@ -69,19 +69,33 @@ public class PlayModeHelper {
      */
     public void updateViolinString() {
 
-        if (deltaRoll <= -stringTiltRange && currentViolinString != ViolinString.E) {
-            currentViolinString = ViolinString.E;
-            currentStringNotes = eStringNotes;
-        } else if (deltaRoll > -stringTiltRange && deltaRoll <= 0 && currentViolinString != ViolinString.A) {
-            currentViolinString = ViolinString.A;
-            currentStringNotes = aStringNotes;
-        } else if (deltaRoll > 0 && deltaRoll <= stringTiltRange && currentViolinString != ViolinString.D) {
-            currentViolinString = ViolinString.D;
-            currentStringNotes = dStringNotes;
-        } else if (deltaRoll > stringTiltRange && currentViolinString != ViolinString.G) {
+        if (deltaRoll <= -stringTiltRange && currentViolinString != ViolinString.G) {
             currentViolinString = ViolinString.G;
             currentStringNotes = gStringNotes;
+        } else if (deltaRoll > -stringTiltRange && deltaRoll <= 0 && currentViolinString != ViolinString.D) {
+            currentViolinString = ViolinString.D;
+            currentStringNotes = dStringNotes;
+        } else if (deltaRoll > 0 && deltaRoll <= stringTiltRange && currentViolinString != ViolinString.A) {
+            currentViolinString = ViolinString.A;
+            currentStringNotes = aStringNotes;
+        } else if (deltaRoll > stringTiltRange && currentViolinString != ViolinString.E) {
+            currentViolinString = ViolinString.E;
+            currentStringNotes = eStringNotes;
         }
+
+//        if (deltaRoll <= -stringTiltRange && currentViolinString != ViolinString.E) {
+//            currentViolinString = ViolinString.E;
+//            currentStringNotes = eStringNotes;
+//        } else if (deltaRoll > -stringTiltRange && deltaRoll <= 0 && currentViolinString != ViolinString.A) {
+//            currentViolinString = ViolinString.A;
+//            currentStringNotes = aStringNotes;
+//        } else if (deltaRoll > 0 && deltaRoll <= stringTiltRange && currentViolinString != ViolinString.D) {
+//            currentViolinString = ViolinString.D;
+//            currentStringNotes = dStringNotes;
+//        } else if (deltaRoll > stringTiltRange && currentViolinString != ViolinString.G) {
+//            currentViolinString = ViolinString.G;
+//            currentStringNotes = gStringNotes;
+//        }
     }
 
     /**
@@ -94,18 +108,6 @@ public class PlayModeHelper {
     }
 
     /**
-     * Sets local View fingerPosition to point to argument currentlyTouchedButton. This
-     * represents where on the string the finger is currently placed, and therefore is used to
-     * determine which note needs to be played.
-     *
-     * @param currentlyTouchedButton
-     */
-    public void updateFingerPosition(View currentlyTouchedButton) {
-        oldFingerPosition = currentFingerPosition;
-        currentFingerPosition = currentlyTouchedButton;
-    }
-
-    /**
      * Updates the progress of the tilt indicator to reflect the current value of float deltaRoll with
      * respect to string tilt range. It also flips the SeekBar as needed, since it indicates how far
      * from the centre tilt the device has been rotated.
@@ -114,8 +116,8 @@ public class PlayModeHelper {
      */
     public void updateTiltIndicator(SeekBar tiltIndicator) {
 
-        if (deltaRoll >= 0 && tiltIndicator.getScaleX() == 1) tiltIndicator.setScaleX(-1);
-        else if (deltaRoll < 0 && tiltIndicator.getScaleX() == -1) tiltIndicator.setScaleX(1);
+        if (deltaRoll >= 0 && tiltIndicator.getScaleX() == -1) tiltIndicator.setScaleX(1);
+        else if (deltaRoll < 0 && tiltIndicator.getScaleX() == 1) tiltIndicator.setScaleX(-1);
 
         int progress = (int) ((Math.abs(deltaRoll) % stringTiltRange) / stringTiltRange * 100);
 

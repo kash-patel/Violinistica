@@ -22,6 +22,6 @@
     <color name="buttonActive">#202020</color>
     <color name="background">#F2F2F2</color>
     <color name="backgroundAlt">#E0E0E0</color>
-    <color name="progressTint">#F0A030</color>
-    <color name="progressBackground">#0080D0</color>
+    <color name="progressTint">#0080D0</color>
+    <color name="progressBackground">#D0D0D0</color>
 </resources>

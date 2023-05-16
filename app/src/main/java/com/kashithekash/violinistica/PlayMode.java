@@ -474,13 +474,6 @@ public class PlayMode extends Activity {
     }
 
     /**
-     * Tells local instance of PlayModeHelper to update its value of current violin string.
-     */
-    private void updateCurrentViolinString() {
-        playModeHelper.updateViolinString();
-    }
-
-    /**
      * Tells local instance of PlayModeHelper to update the tilt indicator SeekBar.
      */
     private void updateTiltIndicator() {
