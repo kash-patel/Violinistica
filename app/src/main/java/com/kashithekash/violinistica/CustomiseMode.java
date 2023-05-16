@@ -1,6 +1,7 @@
 package com.kashithekash.violinistica;
 
 import android.app.Activity;
+import android.app.Notification;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
@@ -8,6 +9,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
@@ -285,10 +287,22 @@ public class CustomiseMode extends Activity {
             }
         });
 
-        calibrateButton.setOnClickListener(new View.OnClickListener() {
+        calibrateButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                calibrate();
+            public boolean onTouch(View v, MotionEvent event) {
+
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    v.setBackgroundColor(getResources().getColor(R.color.buttonActive));
+                    ((Button) v).setTextColor(getResources().getColor(R.color.textActive));
+                    calibrate();
+                }
+                else if (event.getAction() == MotionEvent.ACTION_UP) {
+                    v.setBackgroundColor(getResources().getColor(R.color.button));
+                    ((Button) v).setTextColor(getResources().getColor(R.color.textButton));
+                    calibrate();
+                }
+
+                return false;
             }
         });
 

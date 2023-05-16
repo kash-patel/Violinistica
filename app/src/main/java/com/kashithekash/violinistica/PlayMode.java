@@ -216,10 +216,10 @@ public class PlayMode extends Activity {
             if (currString != playModeHelper.getCurrentViolinString()) {
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    v.vibrate(VibrationEffect.createOneShot(5, VibrationEffect.DEFAULT_AMPLITUDE));
+                    v.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
                 } else {
                     //deprecated in API 26
-                    v.vibrate(5);
+                    v.vibrate(100);
                 }
 
                 prevString = currString;
