@@ -1,8 +1,6 @@
 package com.kashithekash.violinistica;
 
-import android.view.View;
 import android.widget.SeekBar;
-
 import java.util.HashMap;
 
 /**
@@ -22,21 +20,17 @@ public class PlayModeHelper {
     private HashMap<Integer, Integer> noteMap;
 
     private ViolinString currentViolinString = ViolinString.A;
-    private ViolinString oldViolinString = ViolinString.A;
-
-    private View currentFingerPosition = null;
-    private View oldFingerPosition = null;
 
     private float stringTiltRange = 20f;
 
-    private String[] gStringNotes = {"G", "G#", "A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#"};
-    private String[] dStringNotes = {"D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B", "C", "C#"};
-    private String[] aStringNotes = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
-    private String[] eStringNotes = {"E", "F", "F#", "G", "G#", "A", "A#", "B", "C", "C#", "D", "D#"};
+    private final String[] gStringNotes = {"G", "G#", "A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#"};
+    private final String[] dStringNotes = {"D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B", "C", "C#"};
+    private final String[] aStringNotes = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
+    private final String[] eStringNotes = {"E", "F", "F#", "G", "G#", "A", "A#", "B", "C", "C#", "D", "D#"};
 
     private String[] currentStringNotes = aStringNotes;
 
-    private int[] buttonIDs = {
+    private final int[] buttonIDs = {
             R.id.playOpenStringButton,
             R.id.noteButton1,
             R.id.noteButton2,
@@ -55,7 +49,7 @@ public class PlayModeHelper {
     /**
      * Sets local float deltaRoll to the value of the argument newDeltaRoll.
      *
-     * @param newDeltaRoll
+     * @param newDeltaRoll: value to set delta roll to.
      */
     public void updateDeltaRoll(float newDeltaRoll) {
         deltaRoll = newDeltaRoll;
@@ -82,26 +76,12 @@ public class PlayModeHelper {
             currentViolinString = ViolinString.E;
             currentStringNotes = eStringNotes;
         }
-
-//        if (deltaRoll <= -stringTiltRange && currentViolinString != ViolinString.E) {
-//            currentViolinString = ViolinString.E;
-//            currentStringNotes = eStringNotes;
-//        } else if (deltaRoll > -stringTiltRange && deltaRoll <= 0 && currentViolinString != ViolinString.A) {
-//            currentViolinString = ViolinString.A;
-//            currentStringNotes = aStringNotes;
-//        } else if (deltaRoll > 0 && deltaRoll <= stringTiltRange && currentViolinString != ViolinString.D) {
-//            currentViolinString = ViolinString.D;
-//            currentStringNotes = dStringNotes;
-//        } else if (deltaRoll > stringTiltRange && currentViolinString != ViolinString.G) {
-//            currentViolinString = ViolinString.G;
-//            currentStringNotes = gStringNotes;
-//        }
     }
 
     /**
      * Sets local float stringTiltRange to the value of argument newStringTiltRange
      *
-     * @param newStringTiltRange
+     * @param newStringTiltRange : value to set stringTiltRange to.
      */
     public void setStringTiltRange(float newStringTiltRange) {
         stringTiltRange = newStringTiltRange;
@@ -423,8 +403,8 @@ public class PlayModeHelper {
 
     /**
      * Returns highest index with non-zero value.
-     * @param arr
-     * @return
+     * @param arr : array to find max non-zero value index of.
+     * @return maxIndex : the max non-zero value index.
      */
     public int intArrayMaxIndex (int[] arr) {
 
