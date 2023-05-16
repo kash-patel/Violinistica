@@ -20,9 +20,7 @@ import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.SeekBar;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * The PlayMode Activity is the app's default activity, and is where the user will spend most of
@@ -48,6 +46,38 @@ public class PlayMode extends Activity {
     // 0 = not pressed, 1 = pressed
     int noteButtonStates[] = new int[13];
 
+    float streamVolumes[] = {
+            0.0f,
+            0.0f,
+            0.0f,
+            0.0f,
+            0.0f,
+            0.0f,
+            0.0f,
+            0.0f,
+            0.0f,
+            0.0f,
+            0.0f,
+            0.0f,
+            0.0f
+    };
+
+    float blendedInStreamVolumes[] = {
+            0.0f,
+            0.0f,
+            0.0f,
+            0.0f,
+            0.0f,
+            0.0f,
+            0.0f,
+            0.0f,
+            0.0f,
+            0.0f,
+            0.0f,
+            0.0f,
+            0.0f
+    };
+
     // Values from 0 to 12; -1 indicates no button pressed.
     int highestActiveButton = -1;
 
@@ -70,7 +100,7 @@ public class PlayMode extends Activity {
 
     SeekBar tiltIndicator;
     float initialRoll;
-    float currentVolume = 0;
+//    float currentVolume = 0;
     static final int MAX_VOLUME = 1;
     static final int FADE_IN_TIME_MS = 50;
     static final int FADE_OUT_TIME_MS = 100;
@@ -181,7 +211,7 @@ public class PlayMode extends Activity {
                 playModeHelper.updateDeltaRoll(deltaRoll);
             }
 
-            updateCurrentViolinString();
+            playModeHelper.updateViolinString();
 
             if (currString != playModeHelper.getCurrentViolinString()) {
 
@@ -196,10 +226,8 @@ public class PlayMode extends Activity {
                 currString = playModeHelper.getCurrentViolinString();
                 updateNoteButtonText();
 
-                if (highestActiveButton > -1) {
-                    stopNote(playModeHelper.getButtonID(highestActiveButton));
-                    playNote(playModeHelper.getButtonID(highestActiveButton));
-                }
+                if (highestActiveButton > -1)
+                    blendNotes(playModeHelper.getButtonID(highestActiveButton));
             }
 
             updateTiltIndicator();
@@ -261,10 +289,16 @@ public class PlayMode extends Activity {
                 noteButtonStates[buttonNum] = 1;
 
                 if (buttonNum > highestActiveButton) {
+
                     if (highestActiveButton > -1)
                         stopNote(playModeHelper.getButtonID(highestActiveButton));
+
                     highestActiveButton = buttonNum;
-                    playNote(playModeHelper.getButtonID(buttonNum));
+
+                    if (streamVolumes[buttonNum] <= 0)
+                        playNote(v.getId());
+                    else
+                        blendNotes(v.getId());
                 }
 
                 v.setBackgroundColor(getResources().getColor(R.color.buttonActive));
@@ -276,11 +310,19 @@ public class PlayMode extends Activity {
                 noteButtonStates[buttonNum] = 0;
 
                 if (buttonNum == highestActiveButton) {
+
                     if (buttonNum > -1)
-                        stopNote(playModeHelper.getButtonID(buttonNum));
+                        stopNote(v.getId());
+
                     highestActiveButton = playModeHelper.intArrayMaxIndex(noteButtonStates);
-                    if (highestActiveButton > -1)
-                        playNote(playModeHelper.getButtonID(highestActiveButton));
+
+                    if (highestActiveButton > -1) {
+
+                        if (streamVolumes[buttonNum] <= 0)
+                            playNote(playModeHelper.getButtonID(highestActiveButton));
+                        else
+                            blendNotes(playModeHelper.getButtonID(highestActiveButton));
+                    }
                 }
 
                 v.setBackgroundColor(getResources().getColor(R.color.button));
@@ -298,28 +340,48 @@ public class PlayMode extends Activity {
      */
     private void playNote(int buttonID) {
         int note = playModeHelper.getNote(buttonID);
-        int streamID = soundPool.play(note, currentVolume, currentVolume, 0, -1, 1);
+        int streamNum = playModeHelper.getButtonNum(buttonID);
+        int streamID = soundPool.play(note, streamVolumes[streamNum], streamVolumes[streamNum], 0, -1, 1);
         buttonStreamIDs[playModeHelper.getButtonNum(buttonID)] = streamID;
-        fadeInSound(streamID);
+        fadeInSound(streamID, streamNum);
     }
 
     /**
      * Stops the sound whose stream ID is argument streamID and sets local int streamID to -1.
      */
     private void stopNote(int buttonID) {
-        fadeOutSound(buttonStreamIDs[playModeHelper.getButtonNum(buttonID)]);
+        int streamID = buttonStreamIDs[playModeHelper.getButtonNum(buttonID)];
+        int streamNum = playModeHelper.getButtonNum(buttonID);
         buttonStreamIDs[playModeHelper.getButtonNum(buttonID)] = -1;
+        fadeOutSound(streamID, streamNum);
     }
 
-    private void fadeInSound (int streamID) {
+    /**
+     * For the specific case of transitioning from one string to another, or repeatedly tapping
+     * the same button in quick succession.
+     * @param buttonID
+     */
+    private void blendNotes(int buttonID) {
+
+        int note = playModeHelper.getNote(buttonID);
+        int streamNum = playModeHelper.getButtonNum(buttonID);
+        int inStreamID = buttonStreamIDs[playModeHelper.getButtonNum(buttonID)];
+        int outStreamID = soundPool.play(note, blendedInStreamVolumes[streamNum], blendedInStreamVolumes[streamNum], 0, -1, 1);
+
+        blendSound(inStreamID, outStreamID, streamNum);
+
+        buttonStreamIDs[playModeHelper.getButtonNum(buttonID)] = outStreamID;
+    }
+
+    private void fadeInSound (final int streamID, final int streamNum) {
 
         new Thread(new Runnable() {
             @Override
             public void run() {
 
-                while (highestActiveButton > -1 && currentVolume <= MAX_VOLUME) {
+                while (highestActiveButton > -1 && streamVolumes[streamNum] <= MAX_VOLUME) {
 
-                    currentVolume += (MAX_VOLUME / (FADE_IN_TIME_MS / 10.0f));
+                    streamVolumes[streamNum] += (MAX_VOLUME / (FADE_IN_TIME_MS / 10.0f));
 
                     try {
                         Thread.sleep(10);
@@ -327,21 +389,21 @@ public class PlayMode extends Activity {
                         e.printStackTrace();
                     }
 
-                    soundPool.setVolume(streamID, currentVolume, currentVolume);
+                    soundPool.setVolume(streamID, streamVolumes[streamNum], streamVolumes[streamNum]);
                 }
             }
         }).start();
     }
 
-    private void fadeOutSound (int streamID) {
+    private void fadeOutSound (final int streamID, final int streamNum) {
 
         new Thread(new Runnable() {
             @Override
             public void run() {
 
-                while (currentVolume > 0) {
+                while (streamVolumes[streamNum] > 0) {
 
-                    currentVolume -= (MAX_VOLUME / (FADE_OUT_TIME_MS / 10.0f));
+                    streamVolumes[streamNum] -= (MAX_VOLUME / (FADE_OUT_TIME_MS / 10.0f));
 
                     try {
                         Thread.sleep(10);
@@ -349,11 +411,42 @@ public class PlayMode extends Activity {
                         e.printStackTrace();
                     }
 
-                    soundPool.setVolume(streamID, currentVolume, currentVolume);
+                    soundPool.setVolume(streamID, streamVolumes[streamNum], streamVolumes[streamNum]);
                 }
 
                 soundPool.stop(streamID);
-                currentVolume = 0.0f;
+                streamVolumes[streamNum] = 0.0f;
+            }
+        }).start();
+    }
+
+    private void blendSound (final int outStreamID, final int inStreamID, final int streamNum) {
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                while (streamVolumes[streamNum] > 0 || blendedInStreamVolumes[streamNum] < MAX_VOLUME) {
+
+                    streamVolumes[streamNum] -= (MAX_VOLUME / (FADE_OUT_TIME_MS / 10.0f));
+                    blendedInStreamVolumes[streamNum] += (MAX_VOLUME / (FADE_OUT_TIME_MS / 10.0f));
+
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    soundPool.setVolume(inStreamID, blendedInStreamVolumes[streamNum], blendedInStreamVolumes[streamNum]);
+                    soundPool.setVolume(outStreamID, streamVolumes[streamNum], streamVolumes[streamNum]);
+                }
+
+                soundPool.stop(outStreamID);
+                soundPool.setVolume(outStreamID, 0.0f, 0.0f);
+                soundPool.setVolume(inStreamID, MAX_VOLUME, MAX_VOLUME);
+
+                streamVolumes[streamNum] = MAX_VOLUME;
+                blendedInStreamVolumes[streamNum] = 0.0f;
             }
         }).start();
     }

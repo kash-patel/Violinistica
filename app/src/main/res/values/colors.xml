@@ -16,12 +16,12 @@
 
     <color name="text">#202020</color>
     <color name="textAlt">#A0A0A0</color>
-    <color name="textActive">#0080D0</color>
+    <color name="textActive">#F0A030</color>
     <color name="textButton">#F2F2F2</color>
     <color name="button">#0080D0</color>
     <color name="buttonActive">#202020</color>
     <color name="background">#F2F2F2</color>
     <color name="backgroundAlt">#E0E0E0</color>
-    <color name="progressTint">#60F0F0</color>
+    <color name="progressTint">#F0A030</color>
     <color name="progressBackground">#0080D0</color>
 </resources>
