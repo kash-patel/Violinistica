@@ -295,7 +295,9 @@ public class PlayMode extends Activity {
 
                     highestActiveButton = buttonNum;
 
-                    if (streamVolumes[buttonNum] <= 0)
+//                    blendNotes(v.getId());
+
+                    if (streamVolumes[buttonNum] <= 0.1)
                         playNote(v.getId());
                     else
                         blendNotes(v.getId());
@@ -318,7 +320,9 @@ public class PlayMode extends Activity {
 
                     if (highestActiveButton > -1) {
 
-                        if (streamVolumes[buttonNum] <= 0)
+//                        blendNotes(playModeHelper.getButtonID(highestActiveButton));
+
+                        if (streamVolumes[buttonNum] <= 0.1)
                             playNote(playModeHelper.getButtonID(highestActiveButton));
                         else
                             blendNotes(playModeHelper.getButtonID(highestActiveButton));
