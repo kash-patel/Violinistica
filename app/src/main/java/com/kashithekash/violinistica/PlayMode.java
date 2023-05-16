@@ -100,7 +100,11 @@ public class PlayMode extends Activity {
 
     SeekBar tiltIndicator;
     float initialRoll;
-//    float currentVolume = 0;
+
+    // We will average roll to make it smoother
+    float previousRolls[] = {0, 0, 0};
+
+    static final float ONE_THIRD = 1 / 3.0f;
     static final int MAX_VOLUME = 1;
     static final int FADE_IN_TIME_MS = 50;
     static final int FADE_OUT_TIME_MS = 100;
@@ -269,6 +273,12 @@ public class PlayMode extends Activity {
             }
 
             deltaRoll = currentRoll - initialRoll;
+
+            previousRolls[0] = previousRolls[1];
+            previousRolls[1] = previousRolls[2];
+            previousRolls[2] = deltaRoll;
+            
+            deltaRoll = (previousRolls[0] + previousRolls[1] + previousRolls[2]) * ONE_THIRD;
         }
     };
 
