@@ -27,7 +27,7 @@ public class PlayModeHelper {
     private View currentFingerPosition = null;
     private View oldFingerPosition = null;
 
-    private float stringTiltRange = 30f;
+    private float stringTiltRange = 20f;
 
     private String[] gStringNotes = {"G", "G#", "A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#"};
     private String[] dStringNotes = {"D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B", "C", "C#"};

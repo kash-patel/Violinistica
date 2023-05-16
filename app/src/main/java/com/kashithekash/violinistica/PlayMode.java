@@ -277,7 +277,7 @@ public class PlayMode extends Activity {
             previousRolls[0] = previousRolls[1];
             previousRolls[1] = previousRolls[2];
             previousRolls[2] = deltaRoll;
-            
+
             deltaRoll = (previousRolls[0] + previousRolls[1] + previousRolls[2]) * ONE_THIRD;
         }
     };
