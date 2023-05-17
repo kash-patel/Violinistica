@@ -7,13 +7,6 @@
     <color name="colorPrimaryDark">#929292</color>
     <color name="colorAccent">#03DAC5</color>
 
-<!--    <color name="text">#00FFDD</color>-->
-<!--    <color name="textDarker">#009977</color>-->
-<!--    <color name="background">#1E2127</color>-->
-<!--    <color name="backgroundLight">#2E3137</color>-->
-<!--    <color name="progressTint">#00FFDD</color>-->
-<!--    <color name="progressBackground">#009977</color>-->
-
     <color name="text">#202020</color>
     <color name="textAlt">#A0A0A0</color>
     <color name="textActive">#F0A030</color>

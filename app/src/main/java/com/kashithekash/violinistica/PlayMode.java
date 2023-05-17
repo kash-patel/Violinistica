@@ -20,6 +20,8 @@ import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.SeekBar;
 
+import androidx.annotation.RequiresApi;
+
 import java.util.HashMap;
 
 /**
@@ -40,13 +42,13 @@ public class PlayMode extends Activity {
 
     // Array containing active streamID of the audio file playing for each of the thirteen note buttons;
     // -1 means no stream playing
-    int buttonStreamIDs[] = new int[13];
+    int[] buttonStreamIDs = new int[13];
 
     // Array representing state of each of the thirteen note buttons
     // 0 = not pressed, 1 = pressed
-    int noteButtonStates[] = new int[13];
+    int[] noteButtonStates = new int[13];
 
-    float streamVolumes[] = {
+    float[] streamVolumes = {
             0.0f,
             0.0f,
             0.0f,
@@ -62,7 +64,7 @@ public class PlayMode extends Activity {
             0.0f
     };
 
-    float blendedInStreamVolumes[] = {
+    float[] blendedInStreamVolumes = {
             0.0f,
             0.0f,
             0.0f,
@@ -81,12 +83,6 @@ public class PlayMode extends Activity {
     // Values from 0 to 12; -1 indicates no button pressed.
     int highestActiveButton = -1;
 
-    // Priority of currently held button; -1 means none pressed
-    private int currentButtonPriority = -1;
-
-    // Priority of previously held button; -1 means none pressed
-    private int previousButtonPriority = -1;
-
     AudioManager audioManager;
 
     // A HashMap to load the notes for SoundPool
@@ -102,11 +98,11 @@ public class PlayMode extends Activity {
     float initialRoll;
 
     // We will average roll to make it smoother
-    float previousRolls[] = {0, 0, 0};
+    float[] previousRolls = {0, 0, 0};
 
     static final float ONE_THIRD = 1 / 3.0f;
     static final int MAX_VOLUME = 1;
-    static final int FADE_IN_TIME_MS = 50;
+    static final int FADE_IN_TIME_MS = 30;
     static final int FADE_OUT_TIME_MS = 100;
 
     SharedPreferences sharedPreferences;
@@ -186,15 +182,12 @@ public class PlayMode extends Activity {
     /**
      * Handles all events related to changes in device tilt.
      */
-    private SensorEventListener tiltChangeListener = new SensorEventListener() {
+    private final SensorEventListener tiltChangeListener = new SensorEventListener() {
 
         boolean initialRollSet = false;
 
         float currentRoll;
         float deltaRoll;
-
-        int notePlaying = -1;
-        int noteToPlay = -1;
 
         ViolinString prevString = null;
         ViolinString currString = null;
@@ -207,6 +200,7 @@ public class PlayMode extends Activity {
          *
          * @param event any event detected by the device's many sensors.
          */
+        @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         public void onSensorChanged(SensorEvent event) {
 
@@ -219,12 +213,9 @@ public class PlayMode extends Activity {
 
             if (currString != playModeHelper.getCurrentViolinString()) {
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    v.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
-                } else {
-                    //deprecated in API 26
-                    v.vibrate(100);
-                }
+                // This requires API >= 26; since the Google Play store requires all apps to target
+                // API >= 33, I decided not add an alternative for pre-26 SDKs.
+                v.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
 
                 prevString = currString;
                 currString = playModeHelper.getCurrentViolinString();
@@ -287,7 +278,7 @@ public class PlayMode extends Activity {
      * the local instance of PlayModeHelper which button was touched, and updates the button's
      * background and text colours to indicate that it is being touched.
      */
-    private OnTouchListener noteButtonListener = new OnTouchListener() {
+    private final OnTouchListener noteButtonListener = new OnTouchListener() {
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
@@ -305,8 +296,6 @@ public class PlayMode extends Activity {
 
                     highestActiveButton = buttonNum;
 
-//                    blendNotes(v.getId());
-
                     if (streamVolumes[buttonNum] <= 0.1)
                         playNote(v.getId());
                     else
@@ -323,14 +312,11 @@ public class PlayMode extends Activity {
 
                 if (buttonNum == highestActiveButton) {
 
-                    if (buttonNum > -1)
-                        stopNote(v.getId());
+                    stopNote(v.getId());
 
                     highestActiveButton = playModeHelper.intArrayMaxIndex(noteButtonStates);
 
                     if (highestActiveButton > -1) {
-
-//                        blendNotes(playModeHelper.getButtonID(highestActiveButton));
 
                         if (streamVolumes[buttonNum] <= 0.1)
                             playNote(playModeHelper.getButtonID(highestActiveButton));
@@ -350,7 +336,7 @@ public class PlayMode extends Activity {
     /**
      * Sets the local int streamID to the value returned when SoundPool plays the sound file
      * whose resource ID is the value of the argument note.
-     * @param buttonID
+     * @param buttonID : ID of Button View used to determine what note to play.
      */
     private void playNote(int buttonID) {
         int note = playModeHelper.getNote(buttonID);
@@ -373,7 +359,7 @@ public class PlayMode extends Activity {
     /**
      * For the specific case of transitioning from one string to another, or repeatedly tapping
      * the same button in quick succession.
-     * @param buttonID
+     * @param buttonID : ID of Button View used to determine what note to blend in.
      */
     private void blendNotes(int buttonID) {
 
